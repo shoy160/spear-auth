@@ -1,0 +1,5 @@
+server:
+  port: 8562
+spring:
+  application:
+    name: oauth-app

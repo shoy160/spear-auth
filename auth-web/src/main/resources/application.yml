@@ -1,0 +1,10 @@
+server:
+  port: 9862
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://60.255.161.101:33061/db_auth?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
+    username: root
+    password: UZfVXcqkY8cvbJ4w
+auth:
+  login-site: /account/login/test
