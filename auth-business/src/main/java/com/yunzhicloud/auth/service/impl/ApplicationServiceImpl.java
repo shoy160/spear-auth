@@ -3,9 +3,11 @@ package com.yunzhicloud.auth.service.impl;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.yunzhicloud.auth.dao.ApplicationMapper;
+import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
 import com.yunzhicloud.auth.entity.po.ApplicationPO;
 import com.yunzhicloud.auth.service.ApplicationService;
+import com.yunzhicloud.core.utils.CommonUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationMapper mapper;
 
     @Override
-    public ApplicationPO create(String name, String redirect, String logo, String domain) {
+    public ApplicationDTO create(String name, String redirect, String logo, String domain) {
         ApplicationPO entity = new ApplicationPO();
         entity.setId(RandomUtil.randomString(16));
         entity.setSecret(RandomUtil.randomString(32));
@@ -31,12 +33,12 @@ public class ApplicationServiceImpl implements ApplicationService {
         entity.setRedirectLogin(redirect);
         entity.setDomain(domain);
         mapper.insert(entity);
-        return entity;
+        return ApplicationDTO.convert(entity);
     }
 
     @Override
-    public ApplicationPO get(String id) {
+    public ApplicationDTO get(String id) {
         ApplicationPO entity = mapper.selectById(id);
-        return entity;
+        return ApplicationDTO.convert(entity);
     }
 }

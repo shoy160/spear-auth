@@ -6,5 +6,19 @@ spring:
     url: jdbc:mysql://60.255.161.101:33061/db_auth?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
     username: root
     password: UZfVXcqkY8cvbJ4w
+    hikari:
+      pool-name: hikari-sso
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 120000
+      connection-timeout: 30000
+      connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+      connection-test-query: SELECT 1
+  redis:
+    host: 175.153.165.127
+    port: 26379
+    database: 5
+    password: EmGtHWJF5NOcfjnL
 auth:
   login-site: /account/login/test

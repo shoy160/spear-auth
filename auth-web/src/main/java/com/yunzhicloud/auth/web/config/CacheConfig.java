@@ -1,9 +1,12 @@
 package com.yunzhicloud.auth.web.config;
 
+import com.yunzhicloud.auth.cache.RedisCache;
 import com.yunzhicloud.core.cache.Cache;
-import com.yunzhicloud.core.cache.impl.MemoryCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
+
+import javax.annotation.Resource;
 
 /**
  * @author shay
@@ -12,8 +15,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CacheConfig {
 
+    @Resource
+    private RedisTemplate<String, String> template;
+
     @Bean
     public Cache<String, String> cacheBean() {
-        return new MemoryCache<>();
+        return new RedisCache<>(template);
     }
 }

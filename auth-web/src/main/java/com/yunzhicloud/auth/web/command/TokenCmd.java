@@ -46,8 +46,12 @@ public class TokenCmd {
     @ApiModelProperty("刷新令牌(grant_type=refresh_token)")
     private String refresh_token;
 
-    public boolean isCode() {
+    public boolean typeCode() {
         return TYPE_CODE.equals(this.grant_type);
+    }
+
+    public boolean typeRefresh() {
+        return TYPE_REFRESH.equals(this.grant_type);
     }
 
     public void validate() {

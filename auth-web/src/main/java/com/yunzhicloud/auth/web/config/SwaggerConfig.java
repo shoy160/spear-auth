@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
-import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -34,13 +33,13 @@ public class SwaggerConfig extends BaseSwaggerConfig {
 
     @Bean
     @Profile({Constants.MODE_DEV, Constants.MODE_TEST})
-    public Docket fileDocket() {
-        return getDocket("认证授权服务", AuthConstants.VERSION, getBasePackage("core"), "认证授权服务");
+    public Docket mediaDocket() {
+        return getDocket("后台管理", AuthConstants.VERSION, getBasePackage("manage"), "02_manager");
     }
 
     @Bean
     @Profile({Constants.MODE_DEV, Constants.MODE_TEST})
-    public Docket mediaDocket() {
-        return getDocket("后台管理", AuthConstants.VERSION, getBasePackage("manage"), "后台管理");
+    public Docket fileDocket() {
+        return getDocket("认证授权", AuthConstants.VERSION, getBasePackage("core"), "01_auth");
     }
 }

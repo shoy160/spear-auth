@@ -1,7 +1,7 @@
 package com.yunzhicloud.auth.service;
 
+import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
-import com.yunzhicloud.auth.entity.po.ApplicationPO;
 import com.yunzhicloud.core.exception.BusinessException;
 
 /**
@@ -18,7 +18,7 @@ public interface ApplicationService {
      * @param domain
      * @return
      */
-    ApplicationPO create(String name, String redirect, String logo, String domain);
+    ApplicationDTO create(String name, String redirect, String logo, String domain);
 
     /**
      * 获取应用详情
@@ -26,7 +26,7 @@ public interface ApplicationService {
      * @param id
      * @return
      */
-    ApplicationPO get(String id);
+    ApplicationDTO get(String id);
 
     /**
      * 获取并检测应用
@@ -34,12 +34,12 @@ public interface ApplicationService {
      * @param id
      * @return
      */
-    default ApplicationPO getAndCheck(String id) {
-        ApplicationPO app = get(id);
+    default ApplicationDTO getAndCheck(String id) {
+        ApplicationDTO app = get(id);
         if (app == null) {
             throw new BusinessException("应用不存在");
         }
-        if (app.getState() != StateEnum.Normal.getValue()) {
+        if (app.getState() != StateEnum.Normal) {
             throw new BusinessException("应用已下线");
         }
         return app;

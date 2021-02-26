@@ -1,6 +1,5 @@
 package com.yunzhicloud.auth.web.utils;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.URLUtil;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.MapUtils;
@@ -65,7 +64,7 @@ public final class UriUtil {
                 sourceMap.put(key, params.get(key));
             }
         }
-        String query = MapUtils.toUrl(sourceMap, "", false);
+        String query = MapUtils.toUrl(sourceMap, "utf-8", false);
         return array[0].concat(QUERY_START).concat(query);
     }
 

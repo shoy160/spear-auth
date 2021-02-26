@@ -1,6 +1,7 @@
 package com.yunzhicloud.auth.web.test;
 
 import com.yunzhicloud.auth.AuthConstants;
+import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
 import com.yunzhicloud.auth.entity.po.ApplicationPO;
 import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.AuthApplication;
@@ -28,7 +29,7 @@ public class ApplicationTest {
 
     @Test
     public void createTest() {
-        ApplicationPO po = service.create("统一认证中心", "https://auth.app-chengdu1.yunzhicloud.com", "", "auth");
+        ApplicationDTO po = service.create("统一认证中心", "https://auth.app-chengdu1.yunzhicloud.com", "", "auth");
         log.info(JsonUtils.toJson(po));
     }
 }

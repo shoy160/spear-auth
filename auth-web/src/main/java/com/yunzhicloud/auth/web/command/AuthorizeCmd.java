@@ -40,11 +40,11 @@ public class AuthorizeCmd {
     @ApiModelProperty("授权范围")
     private String scope;
 
-    public boolean isCode() {
+    public boolean typeCode() {
         return TYPE_CODE.equals(this.response_type);
     }
 
-    public boolean isToken() {
+    public boolean typeToken() {
         return TYPE_TOKEN.equals(this.response_type);
     }
 
