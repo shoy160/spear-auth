@@ -1,7 +1,7 @@
 package com.yunzhicloud.auth.web.filter;
 
 import cn.hutool.core.util.ArrayUtil;
-import com.yunzhicloud.auth.AuthConstants;
+import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
 import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.config.AuthProperties;
@@ -17,6 +17,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +69,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         HandlerMethod method = (HandlerMethod) handler;
+        HttpSession session = request.getSession();
+        session.setAttribute(AuthConstants.CLAIM_TENANT_ID, request.getHeader(AuthConstants.HEADER_POOL_ID));
+
         //获取注解
         EnableAuth auth = method.getMethodAnnotation(EnableAuth.class);
         if (auth == null) {
@@ -93,19 +97,24 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         Token token = authorizeHandler.verifyToken(split[1], app);
         if (token == null || CommonUtils.isEmpty(token.getId())) {
             handleUnAuthorized(auth, request, response, app);
+            return false;
         } else {
-            // verify token
-            String verify = token.getClaimValue(AuthConstants.CLAIM_VERIFY, String.class);
             if (CommonUtils.isNotEmpty(auth.roles())) {
                 if (CommonUtils.isEmpty(token.getRole())) {
                     handleUnAuthorized(auth, request, response, app);
+                    return false;
                 }
                 String[] roles = token.getRole().split(SPLIT_REG);
                 if (!ArrayUtil.containsAny(roles, auth.roles())) {
                     handleUnAuthorized(auth, request, response, app);
+                    return false;
                 }
             }
         }
+
+        session.setAttribute(AuthConstants.CLAIM_USER_ID, token.getId());
+        session.setAttribute(AuthConstants.CLAIM_USERNAME, token.getName());
+        session.setAttribute(AuthConstants.CLAIM_ROLE, token.getRole());
         return super.preHandle(request, response, handler);
     }
 }

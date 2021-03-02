@@ -2,8 +2,11 @@ package com.yunzhicloud.auth.web.config;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
-import com.yunzhicloud.auth.AuthConstants;
+import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
+import com.yunzhicloud.auth.entity.dto.UserDTO;
+import com.yunzhicloud.auth.web.utils.CookieUtil;
+import com.yunzhicloud.auth.web.vo.AccessTokenVO;
 import com.yunzhicloud.core.cache.Cache;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.JsonUtils;
@@ -25,6 +28,7 @@ public class AuthorizeHandler {
     private final static String CACHE_KEY_VERIFY = "auth:verify:%s:%s:%s";
     private final static String CACHE_KEY_REFRESH = "auth:refresh:%s:%s";
     private final static String CACHE_KEY_CODE = "auth:code:%s:%s";
+    private final static String COOKIE_NAME = "auth_token";
 
     public String saveToken(Token token, ApplicationDTO app) {
         String verifyToken = IdUtil.fastUUID();
@@ -32,11 +36,26 @@ public class AuthorizeHandler {
         String verifyKey = String.format(CACHE_KEY_VERIFY, app.getId(), token.getId(), verifyToken);
         cache.put(verifyKey, "1", app.getTimeAccess(), TimeUnit.SECONDS);
         Date expireAt = new Date(System.currentTimeMillis() + app.getTimeAccess() * 1000);
-        return token.jwt(app.getSecret(), expireAt);
+        String accessToken = token.jwt(app.getPoolSecret(), expireAt);
+        CookieUtil.set(COOKIE_NAME, accessToken, app.getTimeCookie());
+        return accessToken;
+    }
+
+    public void removeToken(String appId, Token token) {
+        if (token == null) {
+            return;
+        }
+        String verify = token.getClaimValue(AuthConstants.CLAIM_VERIFY, String.class);
+        String verifyKey = String.format(CACHE_KEY_VERIFY, appId, token.getId(), verify);
+        cache.remove(verifyKey);
+        CookieUtil.set(COOKIE_NAME, null, -1);
     }
 
     public Token verifyToken(String accessToken, ApplicationDTO app) {
-        Token token = Token.verify(accessToken, app.getSecret());
+        if (CommonUtils.isEmpty(accessToken)) {
+            return null;
+        }
+        Token token = Token.verify(accessToken, app.getPoolSecret());
         if (token == null || CommonUtils.isEmpty(token.getId())) {
             return null;
         }
@@ -82,4 +101,30 @@ public class AuthorizeHandler {
         cache.remove(cacheKey);
         return JsonUtils.json(tokenJson, Token.class);
     }
+
+    public AccessTokenVO generateToken(UserDTO dto, ApplicationDTO app) {
+        Token token = new Token();
+        token.setId(dto.getId());
+        String name = dto.getName();
+        if (CommonUtils.isEmpty(name)) {
+            name = dto.getAccount();
+        }
+        token.setName(name);
+        token.setRole("");
+        return generateToken(token, app);
+    }
+
+    public AccessTokenVO generateToken(Token token, ApplicationDTO app) {
+        String accessToken = saveToken(token, app);
+        AccessTokenVO tokenVO = new AccessTokenVO();
+        tokenVO.setAccess_token(accessToken);
+        tokenVO.setExpires_in(app.getTimeAccess());
+        String refreshToken = saveRefreshToken(token, app);
+        tokenVO.setRefresh_token(refreshToken);
+        tokenVO.setToken_type(AuthConstants.HEADER_BEARER);
+        tokenVO.setScope("");
+        tokenVO.setUser_id(token.getId());
+        return tokenVO;
+    }
+
 }

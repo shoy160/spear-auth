@@ -28,6 +28,11 @@ public class ApplicationDTO extends BaseDTO {
     private String secret;
 
     /**
+     * 用户池秘钥
+     */
+    private String poolSecret;
+
+    /**
      * 应用名称
      */
     private String name;
@@ -87,12 +92,5 @@ public class ApplicationDTO extends BaseDTO {
      */
     private StateEnum state;
 
-    public static ApplicationDTO convert(ApplicationPO entity) {
-        if (entity == null) {
-            return null;
-        }
-        ApplicationDTO dto = CommonUtils.toBean(entity, ApplicationDTO.class);
-        dto.setState(EnumUtils.getEnum(entity.getState(), StateEnum.class));
-        return dto;
-    }
+
 }

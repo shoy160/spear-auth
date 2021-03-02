@@ -5,6 +5,8 @@ import com.yunzhicloud.auth.entity.enums.StateEnum;
 import com.yunzhicloud.core.exception.BusinessException;
 
 /**
+ * 应用服务
+ *
  * @author shay
  * @date 2021/2/24
  */

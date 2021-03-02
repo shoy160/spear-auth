@@ -19,10 +19,6 @@ public class LoginCmd {
     @ApiModelProperty("应用ID")
     private String appId;
 
-    @NotBlank(message = "用户池ID不能为空")
-    @ApiModelProperty("用户池ID")
-    private String poolId;
-
     @NotBlank(message = "登录账号不能为空")
     @ApiModelProperty("登录账号")
     private String account;
@@ -32,5 +28,5 @@ public class LoginCmd {
     private String password;
 
     @ApiModelProperty("图形验证码")
-    private String verifyCode;
+    private String code;
 }

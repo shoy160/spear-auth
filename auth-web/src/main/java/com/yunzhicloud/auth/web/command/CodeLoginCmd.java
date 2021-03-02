@@ -19,18 +19,14 @@ public class CodeLoginCmd {
     @ApiModelProperty("应用ID")
     private String appId;
 
-    @NotBlank(message = "用户池ID不能为空")
-    @ApiModelProperty("用户池ID")
-    private String poolId;
-
     @NotBlank(message = "手机号码不能为空")
     @ApiModelProperty("手机号码")
     private String mobile;
 
-    @NotBlank(message = "验证码不能为空")
-    @ApiModelProperty("验证码")
+    @ApiModelProperty("图形验证码")
     private String code;
 
-    @ApiModelProperty("图形验证码")
+    @ApiModelProperty("验证码")
+    @NotBlank(message = "验证码不能为空")
     private String verifyCode;
 }

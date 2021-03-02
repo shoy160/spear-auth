@@ -2,7 +2,7 @@ package com.yunzhicloud.auth.config;
 
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
-import com.yunzhicloud.auth.AuthConstants;
+import com.yunzhicloud.auth.core.AuthConstants;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

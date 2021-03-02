@@ -1,19 +1,17 @@
 package com.yunzhicloud.auth.web.rest.core;
 
-import cn.hutool.core.util.IdUtil;
-import com.yunzhicloud.auth.AuthConstants;
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
+import com.yunzhicloud.auth.entity.dto.UserDTO;
 import com.yunzhicloud.auth.service.ApplicationService;
+import com.yunzhicloud.auth.service.UserService;
 import com.yunzhicloud.auth.web.command.CodeLoginCmd;
 import com.yunzhicloud.auth.web.command.LoginCmd;
 import com.yunzhicloud.auth.web.config.AuthorizeHandler;
 import com.yunzhicloud.auth.web.filter.EnableAuth;
 import com.yunzhicloud.auth.web.utils.CookieUtil;
 import com.yunzhicloud.auth.web.vo.AccessTokenVO;
-import com.yunzhicloud.core.cache.Cache;
 import com.yunzhicloud.core.domain.ResultDTO;
 import com.yunzhicloud.core.enums.ResultCode;
-import com.yunzhicloud.core.exception.BusinessException;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.web.base.BaseController;
 import com.yunzhicloud.web.vo.Token;
@@ -25,8 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author shay
@@ -40,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class AccountRest extends BaseController {
 
     private final ApplicationService appService;
+    private final UserService userService;
     private final AuthorizeHandler handler;
 
     @EnableAuth
@@ -60,25 +57,32 @@ public class AccountRest extends BaseController {
         if (token == null) {
             return fail(ResultCode.UN_AUTHORIZED);
         }
-        return success(token);
+        UserDTO dto = userService.detail(token.getId());
+        return success(dto);
     }
 
     @PostMapping("login")
     @ApiOperation(value = "密码登录")
     public ResultDTO<AccessTokenVO> login(@Validated @RequestBody LoginCmd cmd) {
-
-        return success(new AccessTokenVO());
+        ApplicationDTO app = appService.getAndCheck(cmd.getAppId());
+        UserDTO dto = userService.login(cmd.getAccount(), cmd.getPassword(), cmd.getCode());
+        AccessTokenVO vo = handler.generateToken(dto, app);
+        return success(vo);
     }
 
     @PostMapping("login/code")
     @ApiOperation(value = "验证码登录")
     public ResultDTO<AccessTokenVO> codeLogin(@Validated @RequestBody CodeLoginCmd cmd) {
-        return success(new AccessTokenVO());
+        ApplicationDTO app = appService.getAndCheck(cmd.getAppId());
+        UserDTO dto = userService.loginByMobile(cmd.getMobile(), cmd.getCode(), cmd.getVerifyCode());
+        AccessTokenVO vo = handler.generateToken(dto, app);
+        return success(vo);
     }
 
-    @PostMapping("code")
+    @PostMapping("code/{mobile}")
     @ApiOperation(value = "发送验证码")
-    public ResultDTO sendCode() {
+    public ResultDTO sendCode(@PathVariable String mobile) {
+        userService.sendVerifyCode(mobile, false);
         return success();
     }
 
@@ -106,18 +110,18 @@ public class AccountRest extends BaseController {
         return success();
     }
 
-    @GetMapping("login/test")
-    public void loginTest(
-            @RequestParam String app_id,
-            @RequestParam String redirect_uri) throws IOException {
-        ApplicationDTO app = appService.getAndCheck(app_id);
-        Token token = new Token();
-        token.setId("123456");
-        token.setName("shay");
-        token.setRole("admin");
-        token.setClaimValue("test", "12456");
-        String accessToken = handler.saveToken(token, app);
-        CookieUtil.set("auth_token", accessToken, app.getTimeCookie());
-        getResponse().sendRedirect(redirect_uri);
-    }
+//    @GetMapping("login/test")
+//    public void loginTest(
+//            @RequestParam String app_id,
+//            @RequestParam String redirect_uri) throws IOException {
+//        ApplicationDTO app = appService.getAndCheck(app_id);
+//        Token token = new Token();
+//        token.setId("123456");
+//        token.setName("shay");
+//        token.setRole("admin");
+//        token.setClaimValue("test", "12456");
+//        String accessToken = handler.saveToken(token, app);
+//        CookieUtil.set("auth_token", accessToken, app.getTimeCookie());
+//        getResponse().sendRedirect(redirect_uri);
+//    }
 }

@@ -52,6 +52,8 @@ public final class CookieUtil {
         if (time > 0) {
             long maxAge = timeUnit.toSeconds(time);
             cookie.setMaxAge((int) maxAge);
+        } else if (time < 0) {
+            cookie.setMaxAge(-1);
         }
         cookie.setHttpOnly(httpOnly);
         if (CommonUtils.isNotEmpty(domain)) {

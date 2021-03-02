@@ -1,6 +1,6 @@
 package com.yunzhicloud.auth.web;
 
-import com.yunzhicloud.auth.AuthConstants;
+import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.core.Constants;
 import com.yunzhicloud.web.YzCloudApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

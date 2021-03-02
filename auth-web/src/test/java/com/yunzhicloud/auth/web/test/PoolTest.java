@@ -1,6 +1,7 @@
 package com.yunzhicloud.auth.web.test;
 
-import com.yunzhicloud.auth.AuthConstants;
+import com.yunzhicloud.auth.core.AuthConstants;
+import com.yunzhicloud.auth.entity.dto.PoolDTO;
 import com.yunzhicloud.auth.entity.po.PoolPO;
 import com.yunzhicloud.auth.service.PoolService;
 import com.yunzhicloud.auth.web.AuthApplication;
@@ -29,7 +30,7 @@ public class PoolTest {
 
     @Test
     public void createTest() {
-        PoolPO po = service.create("统一认证", "auth", "");
+        PoolDTO po = service.create("统一认证", "auth", "");
         log.info(JsonUtils.toJson(po));
     }
 }

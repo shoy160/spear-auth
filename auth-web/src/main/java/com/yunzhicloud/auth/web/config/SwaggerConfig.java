@@ -1,7 +1,7 @@
 package com.yunzhicloud.auth.web.config;
 
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
-import com.yunzhicloud.auth.AuthConstants;
+import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.core.Constants;
 import com.yunzhicloud.web.swagger.BaseSwaggerConfig;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
 package com.yunzhicloud.auth.service;
 
-import com.yunzhicloud.auth.entity.po.PoolPO;
+import com.yunzhicloud.auth.entity.dto.PoolDTO;
 
 /**
  * @author shay
@@ -16,5 +16,14 @@ public interface PoolService {
      * @param logo
      * @return
      */
-    PoolPO create(String name, String domain, String logo);
+    PoolDTO create(String name, String domain, String logo);
+
+    /**
+     * 用户池详情
+     *
+     * @param id id
+     * @return dto
+     */
+    PoolDTO detail(String id);
+
 }
