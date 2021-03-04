@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: business-auth-v1
+  namespace: yunzhicloud-framework-prod
+  labels:
+    app: business-auth
+    app.kubernetes.io/name: business-center
+    app.kubernetes.io/version: v1
+    version: v1
+  annotations:
+    kubesphere.io/description: "统一认证中心 - 接口"
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: business-auth
+      app.kubernetes.io/name: business-center
+      app.kubernetes.io/version: v1
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: business-auth
+        app.kubernetes.io/name: business-center
+        app.kubernetes.io/version: v1
+        version: v1
+      annotations:
+        kubesphere.io/containerSecrets: '{"business-auth":"harbor"}'
+    spec:
+      # volumes:
+      #   - name: volume-${config-key}
+      #     configMap:
+      #       name: web-config
+      #       items:
+      #         - key: ${config-key}
+      #           path: application-prod.properties
+      #       defaultMode: 420
+      containers:
+        - image: $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:$TAG_NAME
+          imagePullPolicy: Always
+          name: business-auth
+          ports:
+            - containerPort: 8080
+              name: tcp-8080
+              protocol: TCP
+          env:
+            - name: SERVER_PORT
+              value: "8080"
+            - name: YZ_MODE
+              value: prod
+          resources:
+            limits:
+              cpu: 1500m
+              memory: 2000Mi
+            requests:
+              cpu: 30m
+              memory: 30Mi
+          # volumeMounts:
+          #   - name: volume-${config-key}
+          #     readOnly: true
+          #     mountPath: /publish/config/application-prod.properties
+          #     subPath: application-prod.properties
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 50
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          # livenessProbe:
+          #   httpGet:
+          #     path: /actuator/health/liveness
+          #     port: 8080
+          #     scheme: HTTP
+          #   initialDelaySeconds: 50
+          #   timeoutSeconds: 1
+          #   periodSeconds: 10
+          #   successThreshold: 1
+          #   failureThreshold: 3
+          # readinessProbe:
+          #   httpGet:
+          #     path: /actuator/health/readiness
+          #     port: 8080
+          #     scheme: HTTP
+          #   initialDelaySeconds: 30
+          #   timeoutSeconds: 1
+          #   periodSeconds: 10
+          #   successThreshold: 1
+          #   failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      imagePullSecrets:
+        - name: harbor

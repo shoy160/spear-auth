@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: business-auth
+    app.kubernetes.io/name: business-center
+    app.kubernetes.io/version: v1
+  name: business-auth
+  namespace: yunzhicloud-framework
+spec:
+  ports:
+    - name: tcp-8080
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: business-auth
+    app.kubernetes.io/name: business-center
+    app.kubernetes.io/version: v1
+  sessionAffinity: None
+  type: ClusterIP

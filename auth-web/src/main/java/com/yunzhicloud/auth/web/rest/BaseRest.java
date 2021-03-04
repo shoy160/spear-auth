@@ -7,6 +7,7 @@ import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.config.AuthorizeHandler;
 import com.yunzhicloud.auth.web.utils.CookieUtil;
 import com.yunzhicloud.auth.web.utils.UriUtil;
+import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.web.base.BaseController;
 import com.yunzhicloud.web.vo.Token;
@@ -28,28 +29,19 @@ public abstract class BaseRest extends BaseController {
     @Resource
     private ApplicationService service;
 
-    private String appId;
-
-    protected void setAppId(String appId) {
-        this.appId = appId;
-    }
+    @Resource
+    private YzSession session;
 
     protected String currentPool() {
-        return getHeader(AuthConstants.HEADER_POOL_ID);
+        return session.getTenantId(String.class, null);
     }
 
     protected String currentUrl() {
-        HttpServletRequest request = getRequest();
-        String uri = request.getRequestURL().toString();
-        Map<String, String[]> map = request.getParameterMap();
-        return UriUtil.buildParams(uri, map);
+        return UriUtil.currentUrl(getRequest());
     }
 
     protected String currentAppId() {
-        if (CommonUtils.isEmpty(this.appId)) {
-            this.appId = getRequest().getParameter(AuthConstants.PARAM_APP_ID);
-        }
-        return this.appId;
+        return handler.getAppId(getRequest());
     }
 
     protected ApplicationDTO currentApp() {
@@ -74,18 +66,7 @@ public abstract class BaseRest extends BaseController {
     }
 
     protected String currentAccessToken() {
-        String token = CookieUtil.get("auth_token");
-        if (CommonUtils.isNotEmpty(token)) {
-            return token;
-        }
-        String authorization = getHeader(AuthConstants.HEADER_AUTHORIZATION);
-        if (CommonUtils.isNotEmpty(authorization)) {
-            String[] split = authorization.split("\\s", 2);
-            if (split.length == 2 && AuthConstants.HEADER_BEARER.equalsIgnoreCase(split[0])) {
-                return split[1];
-            }
-        }
-        return null;
+        return handler.getAccessToken(getRequest());
     }
 
     @Override
