@@ -4,7 +4,6 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.yunzhicloud.auth.core.session.YzSession;
 import com.yunzhicloud.auth.dao.UserMapper;
 import com.yunzhicloud.auth.entity.dto.UserDTO;
 import com.yunzhicloud.auth.entity.enums.GenderEnum;
@@ -14,6 +13,7 @@ import com.yunzhicloud.auth.entity.po.UserPO;
 import com.yunzhicloud.auth.service.UserService;
 import com.yunzhicloud.core.cache.Cache;
 import com.yunzhicloud.core.exception.BusinessException;
+import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.EnumUtils;
 import lombok.AllArgsConstructor;
@@ -104,6 +104,11 @@ public class UserServiceImpl implements UserService {
         if (!password.equalsIgnoreCase(entity.getPassword())) {
             throw new BusinessException("登录密码不正确");
         }
+        entity.setLastLoginDate(LocalDateTime.now());
+        entity.setLastLoginIp("127.0.0.1");
+        entity.setLoginCount(entity.getLoginCount() + 1);
+        //todo 登录日志
+        mapper.updateById(entity);
         return convertToDto(entity);
     }
 

@@ -14,17 +14,12 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @ApiModel
-public class EmailRegisterCmd {
-    @ApiModelProperty("用户名")
-    private String account;
-
-    @ApiModelProperty("邮箱")
-    private String email;
+public class UserMobileCreateCmd {
 
     @ApiModelProperty("手机号码")
     private String mobile;
 
-    @NotBlank(message = "分组名称不能为空")
-    @ApiModelProperty("分组名称")
+    @NotBlank(message = "密码不能为空")
+    @ApiModelProperty("密码")
     private String password;
 }

@@ -19,7 +19,6 @@ pipeline {
         GIT_EMAIL = 'devops@yzcloud.com'
         // SONAR_CREDENTIAL_ID = 'sonar-token'
         KUBECONFIG_CREDENTIAL_ID = 'kube-id'
-        PROD_KUBECONFIG_CREDENTIAL_ID = 'prod-kube-id'
     }
 
     stages {

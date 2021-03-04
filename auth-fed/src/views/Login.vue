@@ -116,17 +116,23 @@ export default {
       document.title = `${this.config.name} 登录 - 云智云统一认证中心`
     },
     getConfig() {
-      request.get(`oauth/config/${this.appId}`).then((json) => {
-        this.config = json.data
-        Cookie.set("auth_pool_id", this.config.poolId)
-        if (!this.redirect) {
-          this.redirect = request.url(
-            `oauth/authorize?client_id=${this.appId}&response_type=code`
-          )
-        }
-        this.verifyToken()
-        this.changeTitle()
-      })
+      request
+        .get(`oauth/config`, {
+          params: {
+            app_id: this.appId,
+          },
+        })
+        .then((json) => {
+          this.config = json.data
+          Cookie.set("auth_pool_id", this.config.poolId)
+          if (!this.redirect) {
+            this.redirect = request.url(
+              `oauth/authorize?client_id=${this.appId}&response_type=code`
+            )
+          }
+          this.verifyToken()
+          this.changeTitle()
+        })
     },
     verifyToken() {
       // const token = Cookie.get("auth_token")
@@ -134,11 +140,17 @@ export default {
       //   location.href = this.redirect
       //   return
       // }
-      request.get(`oauth/sync/${this.appId}`).then((json) => {
-        if (json && json.data.access_token) {
-          this.handlerLogined(json)
-        }
-      })
+      request
+        .get(`oauth/sync`, {
+          params: {
+            app_id: this.appId,
+          },
+        })
+        .then((json) => {
+          if (json && json.data.access_token) {
+            this.handlerLogined(json)
+          }
+        })
     },
     changeType(type) {
       this.loginType = type

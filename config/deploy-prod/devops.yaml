@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: business-auth-v1
-  namespace: yunzhicloud-framework-prod
+  namespace: yunzhicloud-framework
   labels:
     app: business-auth
     app.kubernetes.io/name: business-center
@@ -63,42 +63,26 @@ spec:
           #     readOnly: true
           #     mountPath: /publish/config/application-prod.properties
           #     subPath: application-prod.properties
-          livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 50
-            timeoutSeconds: 1
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
-          readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 30
-            timeoutSeconds: 1
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
-          # livenessProbe:
-          #   httpGet:
-          #     path: /actuator/health/liveness
-          #     port: 8080
-          #     scheme: HTTP
-          #   initialDelaySeconds: 50
-          #   timeoutSeconds: 1
-          #   periodSeconds: 10
-          #   successThreshold: 1
-          #   failureThreshold: 3
-          # readinessProbe:
-          #   httpGet:
-          #     path: /actuator/health/readiness
-          #     port: 8080
-          #     scheme: HTTP
-          #   initialDelaySeconds: 30
-          #   timeoutSeconds: 1
-          #   periodSeconds: 10
-          #   successThreshold: 1
-          #   failureThreshold: 3
+           livenessProbe:
+             httpGet:
+               path: /actuator/health/liveness
+               port: 8080
+               scheme: HTTP
+             initialDelaySeconds: 50
+             timeoutSeconds: 1
+             periodSeconds: 10
+             successThreshold: 1
+             failureThreshold: 3
+           readinessProbe:
+             httpGet:
+               path: /actuator/health/readiness
+               port: 8080
+               scheme: HTTP
+             initialDelaySeconds: 30
+             timeoutSeconds: 1
+             periodSeconds: 10
+             successThreshold: 1
+             failureThreshold: 3
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
       dnsPolicy: ClusterFirst

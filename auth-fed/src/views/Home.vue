@@ -63,14 +63,24 @@ export default {
         })
     },
     handleLogout() {
-      request.put(`oauth/logout/${this.appId}`).then(() => {
-        this.$router.push({
-          path: "/login",
-          query: {
-            app_id: this.appId,
-          },
+      request
+        .put(
+          "oauth/logout",
+          {},
+          {
+            params: {
+              app_id: this.appId,
+            },
+          }
+        )
+        .then(() => {
+          this.$router.push({
+            path: "/login",
+            query: {
+              app_id: this.appId,
+            },
+          })
         })
-      })
     },
   },
 }

@@ -21,6 +21,6 @@ spring:
     database: 5
     password: EmGtHWJF5NOcfjnL
 auth:
-  login-site: http://localhost:8080/login
+  login-site: http://192.168.2.14:8080/login
 yzcloud:
   cors-headers: yz-auth-pool-id,Authorization,Token,content-type,access-token,accesstoken

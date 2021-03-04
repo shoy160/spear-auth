@@ -62,12 +62,12 @@ CREATE TABLE `t_group`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `t_pool`;
 CREATE TABLE `t_pool`  (
-  `fd_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '身份池ID',
-  `fd_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '身份池名称',
-  `fd_remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '身份池描述',
-  `fd_logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '身份池Logo',
-  `fd_domain` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '身份池域名',
-  `fd_secret` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '身份池秘钥',
+  `fd_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户池ID',
+  `fd_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户池名称',
+  `fd_remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户池描述',
+  `fd_logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户池Logo',
+  `fd_domain` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户池域名',
+  `fd_secret` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户池秘钥',
   `fd_user_count` int(11) NOT NULL DEFAULT 0 COMMENT '用户数',
   `fd_state` tinyint(4) NOT NULL COMMENT '状态：1.正常,4.删除',
   `fd_create_time` datetime(0) NOT NULL COMMENT '创建时间',
@@ -82,7 +82,7 @@ CREATE TABLE `t_pool`  (
 -- ----------------------------
 DROP TABLE IF EXISTS `t_pool_config`;
 CREATE TABLE `t_pool_config`  (
-  `fd_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '身份池Id',
+  `fd_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '用户池Id',
   `fd_cors_domain` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '安全域',
   `fd_jwt_expired` int(255) NOT NULL DEFAULT 1296000 COMMENT 'JWT有效时间(秒),默认1296000',
   `fd_fail_login_limit` tinyint(1) NOT NULL DEFAULT 0 COMMENT '登录失败次数限制',

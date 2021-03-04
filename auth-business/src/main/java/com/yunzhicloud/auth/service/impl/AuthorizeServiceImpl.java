@@ -13,5 +13,5 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class AuthorizeServiceImpl implements AuthorizeService {
     private final ApplicationMapper mapper;
-    
+
 }

@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: business-center
     app.kubernetes.io/version: v1
   name: business-auth
-  namespace: yunzhicloud-framework-prod
+  namespace: yunzhicloud-framework
 spec:
   ports:
     - name: tcp-8080

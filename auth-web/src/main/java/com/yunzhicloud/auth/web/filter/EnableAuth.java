@@ -1,5 +1,7 @@
 package com.yunzhicloud.auth.web.filter;
 
+import com.yunzhicloud.web.security.YzAuth;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

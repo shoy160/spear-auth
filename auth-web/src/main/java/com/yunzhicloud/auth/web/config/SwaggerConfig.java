@@ -3,14 +3,22 @@ package com.yunzhicloud.auth.web.config;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
 import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.core.Constants;
+import com.yunzhicloud.web.config.BaseProperties;
 import com.yunzhicloud.web.swagger.BaseSwaggerConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
+import springfox.documentation.builders.ParameterBuilder;
+import springfox.documentation.schema.ModelRef;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author shay
@@ -21,6 +29,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableKnife4j
 @Import(BeanValidatorPluginsConfiguration.class)
 public class SwaggerConfig extends BaseSwaggerConfig {
+    @Resource
+    private BaseProperties properties;
+
     private String getBasePackage(String group) {
         final String restPackage = AuthConstants.REST_PACKAGE;
         return String.format("%s.%s", restPackage, group);
@@ -28,7 +39,33 @@ public class SwaggerConfig extends BaseSwaggerConfig {
 
     @Override
     protected Docket customHeader(Docket docket) {
-        return docket;
+        List<Parameter> params = new ArrayList<>();
+        Parameter tokenHeader = new ParameterBuilder()
+                .name(AuthConstants.HEADER_AUTHORIZATION)
+                .description("用户凭证")
+                .modelRef(new ModelRef("string"))
+                .parameterType("header")
+                .required(false)
+                .defaultValue(AuthConstants.HEADER_BEARER.concat(" ").concat(this.properties.getSwaggerToken()))
+                .build();
+        Parameter poolHeader = new ParameterBuilder()
+                .name(AuthConstants.HEADER_POOL_ID)
+                .description("用户池ID")
+                .modelRef(new ModelRef("string"))
+                .parameterType("header")
+                .required(false)
+                .build();
+        Parameter appHeader = new ParameterBuilder()
+                .name(AuthConstants.HEADER_APP_ID)
+                .description("应用ID")
+                .modelRef(new ModelRef("string"))
+                .parameterType("header")
+                .required(false)
+                .build();
+        params.add(tokenHeader);
+        params.add(poolHeader);
+        params.add(appHeader);
+        return docket.globalOperationParameters(params);
     }
 
     @Bean

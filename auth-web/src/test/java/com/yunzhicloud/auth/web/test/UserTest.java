@@ -1,13 +1,11 @@
 package com.yunzhicloud.auth.web.test;
 
 import com.yunzhicloud.auth.core.AuthConstants;
-import com.yunzhicloud.auth.core.session.SessionDTO;
-import com.yunzhicloud.auth.core.session.YzSession;
-import com.yunzhicloud.auth.dao.UserMapper;
 import com.yunzhicloud.auth.entity.dto.UserDTO;
-import com.yunzhicloud.auth.entity.po.UserPO;
 import com.yunzhicloud.auth.service.UserService;
 import com.yunzhicloud.auth.web.AuthApplication;
+import com.yunzhicloud.core.session.SessionDTO;
+import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.JsonUtils;
 import com.yunzhicloud.test.YzCloudSpringRunner;
 import com.yunzhicloud.test.YzCloudTest;

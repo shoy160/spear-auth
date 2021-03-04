@@ -1,19 +1,23 @@
 package com.yunzhicloud.auth.service.impl;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
-import com.yunzhicloud.auth.core.session.YzSession;
 import com.yunzhicloud.auth.dao.ApplicationMapper;
 import com.yunzhicloud.auth.dao.PoolMapper;
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
+import com.yunzhicloud.auth.entity.dto.PoolDTO;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
 import com.yunzhicloud.auth.entity.po.ApplicationPO;
 import com.yunzhicloud.auth.entity.po.PoolPO;
 import com.yunzhicloud.auth.service.ApplicationService;
+import com.yunzhicloud.core.cache.Cache;
+import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.EnumUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author shay
@@ -25,6 +29,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationMapper mapper;
     private final PoolMapper poolMapper;
     private final YzSession session;
+    private final Cache<String, Object> cache;
 
     private ApplicationDTO convert(ApplicationPO entity) {
         if (entity == null) {
@@ -57,8 +62,15 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public ApplicationDTO get(String id) {
+    public ApplicationDTO detail(String id) {
+        String key = String.format("auth:app:%s", id);
+        Object value = cache.get(key);
+        if (value != null) {
+            return (ApplicationDTO) value;
+        }
         ApplicationPO entity = mapper.selectById(id);
-        return convert(entity);
+        ApplicationDTO dto = convert(entity);
+        cache.put(key, dto, 5, TimeUnit.MINUTES);
+        return dto;
     }
 }

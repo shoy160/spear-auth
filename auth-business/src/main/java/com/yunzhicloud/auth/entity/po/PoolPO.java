@@ -24,37 +24,37 @@ import java.time.LocalDateTime;
 public class PoolPO implements Serializable {
     private static final long serialVersionUID = 1L;
     /**
-     * 身份池ID
+     * 用户池ID
      */
     @TableId(value = "fd_id")
     private String id;
 
     /**
-     * 身份池名称
+     * 用户池名称
      */
     @TableField("fd_name")
     private String name;
 
     /**
-     * 身份池描述
+     * 用户池描述
      */
     @TableField("fd_remark")
     private String remark;
 
     /**
-     * 身份池Logo
+     * 用户池Logo
      */
     @TableField("fd_logo")
     private String logo;
 
     /**
-     * 身份池域名
+     * 用户池域名
      */
     @TableField("fd_domain")
     private String domain;
 
     /**
-     * 身份池秘钥
+     * 用户池秘钥
      */
     @TableField("fd_secret")
     private String secret;

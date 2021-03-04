@@ -20,4 +20,9 @@ public class AuthProperties {
      * 登录站点
      */
     private String loginSite = "/login";
+
+    /**
+     * 默认用户池ID
+     */
+    private String defaultPool = "yz_auth";
 }

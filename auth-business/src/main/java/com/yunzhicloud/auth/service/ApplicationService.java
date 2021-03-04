@@ -28,7 +28,7 @@ public interface ApplicationService {
      * @param id
      * @return
      */
-    ApplicationDTO get(String id);
+    ApplicationDTO detail(String id);
 
     /**
      * 获取并检测应用
@@ -37,7 +37,7 @@ public interface ApplicationService {
      * @return
      */
     default ApplicationDTO getAndCheck(String id) {
-        ApplicationDTO app = get(id);
+        ApplicationDTO app = detail(id);
         if (app == null) {
             throw new BusinessException("应用不存在");
         }

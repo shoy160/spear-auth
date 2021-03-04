@@ -6,6 +6,7 @@ import com.yunzhicloud.auth.entity.dto.PoolDTO;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
 import com.yunzhicloud.auth.entity.po.PoolPO;
 import com.yunzhicloud.auth.service.PoolService;
+import com.yunzhicloud.core.cache.Cache;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.EnumUtils;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.awt.geom.Point2D;
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author shay
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PoolServiceImpl implements PoolService {
     private final PoolMapper mapper;
+    private final Cache<String, Object> cache;
 
     private PoolDTO convert(PoolPO entity) {
         if (entity == null) {
@@ -48,7 +51,14 @@ public class PoolServiceImpl implements PoolService {
 
     @Override
     public PoolDTO detail(String id) {
+        String key = String.format("auth:pool:%s", id);
+        Object value = cache.get(key);
+        if (value != null) {
+            return (PoolDTO) value;
+        }
         PoolPO entity = mapper.selectById(id);
-        return convert(entity);
+        PoolDTO dto = convert(entity);
+        cache.put(key, dto, 5, TimeUnit.MINUTES);
+        return dto;
     }
 }
