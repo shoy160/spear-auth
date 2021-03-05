@@ -1,20 +1,22 @@
 package com.yunzhicloud.auth.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yunzhicloud.auth.dao.ApplicationMapper;
 import com.yunzhicloud.auth.dao.PoolMapper;
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
-import com.yunzhicloud.auth.entity.dto.PoolDTO;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
 import com.yunzhicloud.auth.entity.po.ApplicationPO;
 import com.yunzhicloud.auth.entity.po.PoolPO;
 import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.core.cache.Cache;
+import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.EnumUtils;
+import com.yunzhicloud.data.utils.PagedUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -49,7 +51,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         ApplicationPO entity = new ApplicationPO();
         entity.setId(RandomUtil.randomString(16));
         entity.setSecret(RandomUtil.randomString(32));
-        String poolId = this.session.getTenantId(String.class, "yz_auth");
+        String poolId = this.session.requiredTenantId(String.class);
         entity.setPoolId(poolId);
         entity.setName(name);
         entity.setLogo(logo);
@@ -72,5 +74,14 @@ public class ApplicationServiceImpl implements ApplicationService {
         ApplicationDTO dto = convert(entity);
         cache.put(key, dto, 5, TimeUnit.MINUTES);
         return dto;
+    }
+
+    @Override
+    public PagedDTO<ApplicationDTO> paged(int page, int size) {
+        LambdaQueryWrapper<ApplicationPO> wrapper = new LambdaQueryWrapper<>();
+        String poolId = session.requiredTenantId(String.class);
+        wrapper.eq(ApplicationPO::getPoolId, poolId);
+        Page<ApplicationPO> paged = mapper.selectPage(new Page<>(page, size), wrapper);
+        return PagedUtils.convert(paged, this::convert);
     }
 }

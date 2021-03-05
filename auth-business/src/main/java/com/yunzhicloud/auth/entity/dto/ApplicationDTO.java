@@ -1,17 +1,11 @@
 package com.yunzhicloud.auth.entity.dto;
 
 import com.yunzhicloud.auth.entity.enums.StateEnum;
-import com.yunzhicloud.auth.entity.po.ApplicationPO;
-import com.yunzhicloud.core.domain.BaseDTO;
-import com.yunzhicloud.core.utils.CommonUtils;
-import com.yunzhicloud.core.utils.EnumUtils;
+import com.yunzhicloud.data.domain.dto.BaseDateDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author shay
@@ -20,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ApiModel
-public class ApplicationDTO extends BaseDTO {
+public class ApplicationDTO extends BaseDateDTO {
     /**
      * App ID
      */
@@ -98,12 +92,6 @@ public class ApplicationDTO extends BaseDTO {
      */
     @ApiModelProperty("cookie过期时间(秒)")
     private Integer timeCookie;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date createTime;
 
     /**
      * 状态

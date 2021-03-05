@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
+import com.yunzhicloud.data.domain.po.BaseAuditPO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,13 +25,14 @@ import java.util.Date;
 @Getter
 @Setter
 @TableName("t_application")
-public class ApplicationPO implements Serializable {
+public class ApplicationPO extends BaseAuditPO {
     private static final long serialVersionUID = 1L;
     /**
      * App ID
      */
     @TableId(value = "fd_id")
     private String id;
+
 
     /**
      * App Secret
@@ -99,12 +101,6 @@ public class ApplicationPO implements Serializable {
     private int timeCookie;
 
     /**
-     * 创建时间
-     */
-    @TableField("fd_create_time")
-    private LocalDateTime createTime;
-
-    /**
      * 状态
      */
     @TableField("fd_state")
@@ -115,7 +111,6 @@ public class ApplicationPO implements Serializable {
         this.setTimeAccess(1209600);
         this.setTimeRefresh(2592000);
         this.setTimeCookie(1209600);
-        this.setCreateTime(LocalDateTime.now());
         setState(StateEnum.Normal.getValue());
     }
 }

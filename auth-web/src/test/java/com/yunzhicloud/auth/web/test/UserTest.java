@@ -39,17 +39,19 @@ public class UserTest {
     private final SessionDTO currentSession;
 
     public UserTest() {
-        currentSession = new SessionDTO("", "yz_auth01");
+        currentSession = new SessionDTO("5b54589e4ab247c2a34a3bbc62c9e5ef", "yz_auth01");
     }
 
     @Test
     public void createTest() {
         try (Closeable ignored = session.use(currentSession)) {
+            log.info(session.userIdAsString());
             UserDTO dto = service.createByEmail("test@qq.com", "123456", "shay01");
             log.info(JsonUtils.toJson(dto));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
+        log.info(session.userIdAsString());
     }
 
     @Test

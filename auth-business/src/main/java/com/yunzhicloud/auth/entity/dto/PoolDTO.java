@@ -1,6 +1,7 @@
 package com.yunzhicloud.auth.entity.dto;
 
 import com.yunzhicloud.auth.entity.enums.StateEnum;
+import com.yunzhicloud.data.domain.dto.BaseDateDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.Date;
 @Setter
 @ToString
 @ApiModel
-public class PoolDTO {
+public class PoolDTO extends BaseDateDTO {
     /**
      * 用户池ID
      */
@@ -65,12 +66,6 @@ public class PoolDTO {
      */
     @ApiModelProperty("状态")
     private StateEnum state;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date createTime;
 
     /**
      * 最后注册时间

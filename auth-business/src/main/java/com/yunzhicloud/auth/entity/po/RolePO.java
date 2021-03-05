@@ -7,21 +7,17 @@ import com.yunzhicloud.data.domain.po.BaseAuditPO;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 /**
- * t_login_log
+ * 角色表
  *
- * @author shay
- * @date 2021/03/01
+ * @author {user}
+ * @date 2021/03/05
  * @serial generate by spear
  */
 @Getter
 @Setter
-@TableName("t_login_log")
-public class LoginLogPO extends BaseAuditPO {
-
+@TableName("t_role")
+public class RolePO extends BaseAuditPO {
     private static final long serialVersionUID = 1L;
     /**
      * fd_id
@@ -30,44 +26,27 @@ public class LoginLogPO extends BaseAuditPO {
     private String id;
 
     /**
-     * 用户ID
-     */
-    @TableField("fd_user_id")
-    private String userId;
-
-    /**
-     * 应用ID
-     */
-    @TableField("fd_app_id")
-    private String appId;
-
-    /**
      * 用户池ID
      */
     @TableField("fd_pool_id")
     private String poolId;
 
     /**
-     * UserAgent
+     * 命名空间(分组)
      */
-    @TableField("fd_user_agent")
-    private String userAgent;
+    @TableField("fd_namespace")
+    private String namespace;
 
     /**
-     * IP
+     * 角色编码
      */
-    @TableField("fd_ip_addr")
-    private String ipAddr;
+    @TableField("fd_code")
+    private String code;
 
     /**
-     * 状态：1.成功,4.失败
-     */
-    @TableField("fd_state")
-    private int state;
-
-    /**
-     * fd_remark
+     * 角色备注
      */
     @TableField("fd_remark")
     private String remark;
 }
+

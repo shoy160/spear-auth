@@ -3,6 +3,7 @@ package com.yunzhicloud.auth.entity.dto;
 import com.yunzhicloud.auth.entity.enums.GenderEnum;
 import com.yunzhicloud.auth.entity.enums.RegisterTypeEnum;
 import com.yunzhicloud.auth.entity.enums.VerifyTypeEnum;
+import com.yunzhicloud.data.domain.dto.BaseDateDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -20,7 +21,7 @@ import java.util.Date;
 @Setter
 @ToString
 @ApiModel("用户信息")
-public class UserDTO {
+public class UserDTO extends BaseDateDTO {
     private String id;
 
     /**
@@ -82,18 +83,6 @@ public class UserDTO {
      */
     @ApiModelProperty("用户池ID")
     private String poolId;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty("创建时间")
-    private Date createDate;
-
-    /**
-     * 更新时间
-     */
-    @ApiModelProperty("更新时间")
-    private Date updateDate;
 
     /**
      * 最后登录时间

@@ -31,7 +31,7 @@ public abstract class BaseRest extends BaseController {
     private ApplicationService service;
 
     protected String currentPool() {
-        return session.getTenantId(String.class, null);
+        return session.tenantIdAsString();
     }
 
     protected String currentUrl() {

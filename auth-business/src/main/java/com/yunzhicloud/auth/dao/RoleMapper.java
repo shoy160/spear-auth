@@ -1,15 +1,15 @@
 package com.yunzhicloud.auth.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.yunzhicloud.auth.entity.po.PoolPO;
+import com.yunzhicloud.auth.entity.po.RolePO;
 import org.springframework.stereotype.Repository;
 
 /**
- * 用户池仓储
+ * 角色仓储
  *
  * @author shay
- * @date 2021/2/24
+ * @date 2021/3/5
  */
 @Repository
-public interface PoolMapper extends BaseMapper<PoolPO> {
+public interface RoleMapper extends BaseMapper<RolePO> {
 }

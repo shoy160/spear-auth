@@ -10,7 +10,7 @@ import com.yunzhicloud.auth.web.rest.BaseRest;
 import com.yunzhicloud.auth.web.utils.UriUtil;
 import com.yunzhicloud.auth.web.vo.AccessTokenVO;
 import com.yunzhicloud.auth.web.vo.AppPublicConfigVO;
-import com.yunzhicloud.core.domain.ResultDTO;
+import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.web.security.YzAuth;
 import com.yunzhicloud.web.vo.Token;
@@ -136,7 +136,7 @@ public class AuthorizeRest extends BaseRest {
     @PutMapping("logout")
     @ApiOperation(value = "注销登录")
     public ResultDTO logout(
-            @ApiParam(value = "应用ID", required = true) @RequestParam String app_id
+            @ApiParam(value = "应用ID") @RequestParam(required = false) String app_id
     ) {
         handler.removeToken(app_id, currentToken());
         return success();

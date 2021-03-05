@@ -13,6 +13,7 @@
         <module>auth-web</module>
         <module>auth-business</module>
         <module>demo</module>
+        <module>auth-protocol</module>
     </modules>
 
     <groupId>com.yunzhicloud.auth</groupId>

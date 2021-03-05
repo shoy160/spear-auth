@@ -8,8 +8,8 @@ import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.command.manage.ApplicationCmd;
 import com.yunzhicloud.auth.web.command.manage.GrantCmd;
 import com.yunzhicloud.auth.web.rest.BaseRest;
-import com.yunzhicloud.core.domain.PagedDTO;
-import com.yunzhicloud.core.domain.ResultDTO;
+import com.yunzhicloud.core.domain.dto.PagedDTO;
+import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.web.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,7 +39,6 @@ public class ApplicationRest extends BaseRest {
     @PostMapping
     @ApiOperation(value = "创建应用")
     public ResultDTO<ApplicationDTO> create(@Valid @RequestBody ApplicationCmd cmd) {
-        String poolId = currentPool();
         ApplicationDTO dto = service.create(cmd.getName(), cmd.getRedirect(), cmd.getLogo(), cmd.getDomain());
         return success(dto);
     }
@@ -47,10 +46,8 @@ public class ApplicationRest extends BaseRest {
     @GetMapping("paged")
     @ApiOperation(value = "应用列表")
     public ResultDTO<PagedDTO<ApplicationDTO>> paged(@Valid PageVO page) {
-        List<ApplicationDTO> list = new ArrayList<>();
-        list.add(new ApplicationDTO());
-        PagedDTO<ApplicationDTO> pagedDTO = PagedDTO.paged(list);
-        return success(pagedDTO);
+        PagedDTO<ApplicationDTO> paged = service.paged(page.getPageNum(), page.getPageSize());
+        return success(paged);
     }
 
     @GetMapping

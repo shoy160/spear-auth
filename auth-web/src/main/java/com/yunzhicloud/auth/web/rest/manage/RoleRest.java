@@ -3,8 +3,8 @@ package com.yunzhicloud.auth.web.rest.manage;
 import com.yunzhicloud.auth.entity.dto.RoleDTO;
 import com.yunzhicloud.auth.web.command.manage.RoleCmd;
 import com.yunzhicloud.auth.web.rest.BaseRest;
-import com.yunzhicloud.core.domain.PagedDTO;
-import com.yunzhicloud.core.domain.ResultDTO;
+import com.yunzhicloud.core.domain.dto.PagedDTO;
+import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.web.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,7 +40,7 @@ public class RoleRest extends BaseRest {
     @ApiOperation(value = "角色列表")
     public ResultDTO<PagedDTO<RoleDTO>> paged(
             @Valid PageVO page,
-            @ApiParam(value = "分组") String namespace
+            @ApiParam(value = "分组", required = true) @RequestParam String namespace
     ) {
         List<RoleDTO> list = new ArrayList<>();
         PagedDTO<RoleDTO> pagedDTO = new PagedDTO<>(0, list);

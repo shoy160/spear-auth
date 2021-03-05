@@ -1,5 +1,6 @@
 package com.yunzhicloud.auth.entity.dto;
 
+import com.yunzhicloud.data.domain.dto.BaseDateDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @ApiModel
-public class GroupDTO {
+public class GroupDTO extends BaseDateDTO {
     @ApiModelProperty("分组ID")
     private String id;
     @ApiModelProperty("分组名称")

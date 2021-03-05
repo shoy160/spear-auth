@@ -2,6 +2,7 @@ package com.yunzhicloud.auth.service;
 
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
+import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.exception.BusinessException;
 
 /**
@@ -25,10 +26,19 @@ public interface ApplicationService {
     /**
      * 获取应用详情
      *
-     * @param id
+     * @param id id
      * @return
      */
     ApplicationDTO detail(String id);
+
+    /**
+     * 分页
+     *
+     * @param page page
+     * @param size size
+     * @return
+     */
+    PagedDTO<ApplicationDTO> paged(int page, int size);
 
     /**
      * 获取并检测应用

@@ -3,6 +3,7 @@ package com.yunzhicloud.auth.entity.dto;
 import com.yunzhicloud.auth.entity.enums.GrantPolicyEnum;
 import com.yunzhicloud.auth.entity.enums.GrantTypeEnum;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
+import com.yunzhicloud.data.domain.dto.BaseDateDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -19,7 +20,7 @@ import lombok.ToString;
 @Setter
 @ApiModel
 @ToString
-public class GrantDTO {
+public class GrantDTO extends BaseDateDTO {
 
     @ApiModelProperty("授权ID")
     private String id;

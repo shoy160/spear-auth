@@ -5,9 +5,11 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.yunzhicloud.auth.entity.dto.PoolDTO;
 import com.yunzhicloud.auth.entity.dto.PoolStatisticDTO;
+import com.yunzhicloud.auth.service.PoolService;
 import com.yunzhicloud.auth.web.command.manage.PoolCmd;
 import com.yunzhicloud.auth.web.rest.BaseRest;
-import com.yunzhicloud.core.domain.ResultDTO;
+import com.yunzhicloud.core.domain.dto.PagedDTO;
+import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.web.vo.PageVO;
 import io.swagger.annotations.Api;
@@ -35,7 +37,8 @@ import java.util.List;
 @RequestMapping("manage/pool")
 @Api(tags = "用户池相关接口")
 public class PoolRest extends BaseRest {
-//    private final PoolService service;
+
+    private final PoolService service;
 
     private PoolDTO createDto() {
         return createDto(null);
@@ -50,7 +53,6 @@ public class PoolRest extends BaseRest {
         dto.setName("Demo");
         dto.setLogo("https://files.authing.co/user-contents/photos/222c3166-0e18-414e-8eb8-6b8f0c1b544a.png");
         dto.setRemark("demo");
-        dto.setCreateTime(new Date());
         dto.setDomain("");
         dto.setUserCount(0);
         dto.setSecret(RandomUtil.randomString(32));
@@ -61,21 +63,22 @@ public class PoolRest extends BaseRest {
     @PostMapping
     @ApiOperation(value = "创建用户池")
     public ResultDTO<PoolDTO> create(@Valid @RequestBody PoolCmd cmd) {
+
         return success(createDto());
     }
 
     @GetMapping
     @ApiOperation(value = "用户池详情")
     public ResultDTO<PoolDTO> detail(@ApiParam(value = "用户池ID", required = true) @RequestParam String id) {
-        return success(createDto(id));
+        PoolDTO dto = service.detail(id);
+        return success(dto);
     }
 
     @GetMapping("paged")
     @ApiOperation(value = "用户池列表")
-    public ResultDTO<List<PoolDTO>> list(@Valid PageVO pageVO) {
-        List<PoolDTO> list = new ArrayList<>();
-        list.add(createDto());
-        return success(list);
+    public ResultDTO<PagedDTO<PoolDTO>> list(@Valid PageVO pageVO) {
+        PagedDTO<PoolDTO> paged = service.paged(pageVO.getPageNum(), pageVO.getPageSize());
+        return success(paged);
     }
 
     @PutMapping

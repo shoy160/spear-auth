@@ -10,7 +10,7 @@ import com.yunzhicloud.auth.web.config.AuthorizeHandler;
 import com.yunzhicloud.auth.web.filter.EnableAuth;
 import com.yunzhicloud.auth.web.rest.BaseRest;
 import com.yunzhicloud.auth.web.vo.AccessTokenVO;
-import com.yunzhicloud.core.domain.ResultDTO;
+import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.core.enums.ResultCode;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.web.security.YzAuth;

@@ -52,9 +52,11 @@ public class AuthorizeHandler {
         if (token == null) {
             return;
         }
-        String verify = token.getClaimValue(AuthConstants.CLAIM_VERIFY, String.class);
-        String verifyKey = String.format(CACHE_KEY_VERIFY, appId, token.getId(), verify);
-        cache.remove(verifyKey);
+        if (CommonUtils.isNotEmpty(appId)) {
+            String verify = token.getClaimValue(AuthConstants.CLAIM_VERIFY, String.class);
+            String verifyKey = String.format(CACHE_KEY_VERIFY, appId, token.getId(), verify);
+            cache.remove(verifyKey);
+        }
         CookieUtil.set(COOKIE_NAME, null, -1);
     }
 

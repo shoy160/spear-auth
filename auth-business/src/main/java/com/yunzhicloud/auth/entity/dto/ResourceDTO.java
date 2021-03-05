@@ -1,6 +1,7 @@
 package com.yunzhicloud.auth.entity.dto;
 
 import com.yunzhicloud.auth.entity.enums.ResourceTypeEnum;
+import com.yunzhicloud.data.domain.dto.BaseDateDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -17,7 +18,7 @@ import java.util.List;
 @Setter
 @ToString
 @ApiModel
-public class ResourceDTO {
+public class ResourceDTO extends BaseDateDTO {
     @ApiModelProperty("资源ID")
     private String id;
     @ApiModelProperty("资源分组ID")

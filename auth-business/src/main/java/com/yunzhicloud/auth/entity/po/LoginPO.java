@@ -7,21 +7,19 @@ import com.yunzhicloud.data.domain.po.BaseAuditPO;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
- * t_login_log
+ * t_login
  *
- * @author shay
- * @date 2021/03/01
+ * @author {user}
+ * @date 2021/03/05
  * @serial generate by spear
  */
 @Getter
 @Setter
-@TableName("t_login_log")
-public class LoginLogPO extends BaseAuditPO {
-
+@TableName("t_login")
+public class LoginPO extends BaseAuditPO {
     private static final long serialVersionUID = 1L;
     /**
      * fd_id
@@ -48,26 +46,33 @@ public class LoginLogPO extends BaseAuditPO {
     private String poolId;
 
     /**
-     * UserAgent
+     * AccessToken
+     */
+    @TableField("fd_access_token")
+    private String accessToken;
+
+    /**
+     * RefreshToken
+     */
+    @TableField("fd_refresh_token")
+    private String refreshToken;
+
+    /**
+     * fd_user_agent
      */
     @TableField("fd_user_agent")
     private String userAgent;
 
     /**
-     * IP
+     * 过期时间
      */
-    @TableField("fd_ip_addr")
-    private String ipAddr;
+    @TableField("fd_expired_date")
+    private Date expiredDate;
 
     /**
-     * 状态：1.成功,4.失败
+     * RefreshToken过期时间
      */
-    @TableField("fd_state")
-    private int state;
-
-    /**
-     * fd_remark
-     */
-    @TableField("fd_remark")
-    private String remark;
+    @TableField("fd_expired_refresh_date")
+    private Date expiredRefreshDate;
 }
+
