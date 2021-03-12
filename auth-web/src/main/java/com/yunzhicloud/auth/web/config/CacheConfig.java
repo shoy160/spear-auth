@@ -17,19 +17,14 @@ import javax.annotation.Resource;
 @EnableCaching
 public class CacheConfig {
 
-    @Resource
-    private RedisTemplate<String, String> template;
-
-    @Resource
-    private RedisTemplate<String, Object> objectTemplate;
-
     @Bean
-    public Cache<String, String> cacheBean() {
+    public Cache<String, String> cacheBean(RedisTemplate<String, String> template) {
         return new RedisCache<>(template);
     }
 
     @Bean
-    public Cache<String, Object> cacheObjectBean() {
+    @SuppressWarnings("all")
+    public <T> Cache<String, T> cacheObjectBean(RedisTemplate<String, T> objectTemplate) {
         return new RedisCache<>(objectTemplate);
     }
 }

@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class PoolServiceImpl implements PoolService {
     private final PoolMapper mapper;
     private final YzSession session;
-    private final Cache<String, Object> cache;
+    private final Cache<String, PoolDTO> cache;
 
     private PoolDTO convert(PoolPO entity) {
         if (entity == null) {
@@ -84,9 +84,9 @@ public class PoolServiceImpl implements PoolService {
     @Override
     public PoolDTO detail(String id) {
         String key = String.format("auth:pool:%s", id);
-        Object value = cache.get(key);
+        PoolDTO value = cache.get(key);
         if (value != null) {
-            return (PoolDTO) value;
+            return value;
         }
         PoolPO entity = mapper.selectById(id);
         PoolDTO dto = convert(entity);

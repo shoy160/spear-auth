@@ -24,15 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthConfig {
     @Resource
     private AuthProperties config;
-    @Resource
-    private AuthorizeHandler handler;
-    @Resource
-    private PoolService poolService;
-    @Resource
-    private ApplicationService appService;
 
 
-    private Token getToken(HttpServletRequest request) {
+    private Token getToken(AuthorizeHandler handler, PoolService poolService, ApplicationService appService) {
+        HttpServletRequest request = AuthContext.getRequest();
         try {
             Object value = request.getAttribute(AuthConstants.HEADER_ACCESS_TOKEN);
             if (value != null) {
@@ -70,11 +65,8 @@ public class AuthConfig {
     }
 
     @Bean
-    public TokenSolver tokenSolver() {
-        return () -> {
-            HttpServletRequest request = AuthContext.getRequest();
-            return getToken(request);
-        };
+    public TokenSolver tokenSolver(AuthorizeHandler handler, PoolService poolService, ApplicationService appService) {
+        return () -> getToken(handler, poolService, appService);
     }
 
     @Bean

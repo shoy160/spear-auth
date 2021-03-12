@@ -33,7 +33,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationMapper mapper;
     private final PoolMapper poolMapper;
     private final YzSession session;
-    private final Cache<String, Object> cache;
+    private final Cache<String, ApplicationDTO> cache;
 
     private ApplicationDTO convert(ApplicationPO entity) {
         if (entity == null) {
@@ -78,9 +78,9 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public ApplicationDTO detail(String id) {
         String key = String.format("auth:app:%s", id);
-        Object value = cache.get(key);
+        ApplicationDTO value = cache.get(key);
         if (value != null) {
-            return (ApplicationDTO) value;
+            return value;
         }
         ApplicationPO entity = mapper.selectById(id);
         ApplicationDTO dto = convert(entity);

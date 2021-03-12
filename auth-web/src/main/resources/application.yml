@@ -1,5 +1,3 @@
-yzcloud:
-  cors-headers: yz-auth-pool-id,Authorization,Token,content-type,access-token,accesstoken
 nacos:
   config:
     server-addr: https://center-nacos.app-chengdu1.yunzhicloud.com

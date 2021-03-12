@@ -1,8 +1,5 @@
 package com.yunzhicloud.auth.web.rest.manage;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.RandomUtil;
 import com.yunzhicloud.auth.entity.dto.PoolDTO;
 import com.yunzhicloud.auth.entity.dto.PoolStatisticDTO;
 import com.yunzhicloud.auth.service.PoolService;
@@ -10,20 +7,17 @@ import com.yunzhicloud.auth.web.command.manage.PoolCmd;
 import com.yunzhicloud.auth.web.rest.BaseRest;
 import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.domain.dto.ResultDTO;
-import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.web.vo.PageVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * 用户池相关接口
@@ -33,7 +27,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("manage/pool")
 @Api(tags = "用户池相关接口")
 public class PoolRest extends BaseRest {

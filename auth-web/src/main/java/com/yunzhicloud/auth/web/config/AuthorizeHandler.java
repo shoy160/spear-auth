@@ -18,7 +18,6 @@ import com.yunzhicloud.web.vo.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
