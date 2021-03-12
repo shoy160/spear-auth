@@ -30,14 +30,14 @@ spec:
       annotations:
         kubesphere.io/containerSecrets: '{"business-auth":"harbor"}'
     spec:
-       volumes:
-         - name: volume-business-auth
-           configMap:
-             name: web-config
-             items:
-               - key: application.yml
-                 path: application.yml
-             defaultMode: 420
+      volumes:
+        - name: volume-business-auth
+          configMap:
+            name: web-config
+            items:
+              - key: application.yml
+                path: application.yml
+            defaultMode: 420
       containers:
         - image: $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:$TAG_NAME
           imagePullPolicy: Always
@@ -58,31 +58,31 @@ spec:
             requests:
               cpu: 30m
               memory: 30Mi
-           volumeMounts:
-             - name: volume-business-auth
-               readOnly: true
-               mountPath: /publish/config/application.yml
-               subPath: application.yml
-           livenessProbe:
-             httpGet:
-               path: /actuator/health/liveness
-               port: 8080
-               scheme: HTTP
-             initialDelaySeconds: 50
-             timeoutSeconds: 1
-             periodSeconds: 10
-             successThreshold: 1
-             failureThreshold: 3
-           readinessProbe:
-             httpGet:
-               path: /actuator/health/readiness
-               port: 8080
-               scheme: HTTP
-             initialDelaySeconds: 30
-             timeoutSeconds: 1
-             periodSeconds: 10
-             successThreshold: 1
-             failureThreshold: 3
+          volumeMounts:
+            - name: volume-business-auth
+              readOnly: true
+              mountPath: /publish/config/application.yml
+              subPath: application.yml
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 50
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
