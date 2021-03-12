@@ -9,6 +9,7 @@
         <version>1.1.7</version>
     </parent>
     <modules>
+        <module>auth-core</module>
         <module>auth-web</module>
         <module>auth-business</module>
         <module>demo</module>
