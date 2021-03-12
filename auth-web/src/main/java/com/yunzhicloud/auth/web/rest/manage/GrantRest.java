@@ -3,7 +3,6 @@ package com.yunzhicloud.auth.web.rest.manage;
 import com.yunzhicloud.auth.entity.dto.GrantDTO;
 import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.command.manage.GrantCmd;
-import com.yunzhicloud.auth.web.rest.BaseRest;
 import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.web.vo.PageVO;

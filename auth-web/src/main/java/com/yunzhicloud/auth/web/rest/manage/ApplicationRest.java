@@ -7,7 +7,6 @@ import com.yunzhicloud.auth.entity.enums.GrantPolicyEnum;
 import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.command.manage.ApplicationCmd;
 import com.yunzhicloud.auth.web.command.manage.GrantCmd;
-import com.yunzhicloud.auth.web.rest.BaseRest;
 import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.web.vo.PageVO;

@@ -1,4 +1,4 @@
-package com.yunzhicloud.auth.web.rest;
+package com.yunzhicloud.auth.web.rest.manage;
 
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
 import com.yunzhicloud.auth.service.ApplicationService;
@@ -36,18 +36,6 @@ public abstract class BaseRest extends BaseController {
 
     protected String currentUrl() {
         return UriUtil.currentUrl();
-    }
-
-    protected String currentAppId() {
-        return handler.getAppId();
-    }
-
-    protected ApplicationDTO currentApp() {
-        return handler.currentApp();
-    }
-
-    protected String currentAccessToken() {
-        return handler.getAccessToken();
     }
 
     @Override

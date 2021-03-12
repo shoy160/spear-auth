@@ -2,7 +2,6 @@ package com.yunzhicloud.auth.web.rest.manage;
 
 import com.yunzhicloud.auth.entity.dto.RoleDTO;
 import com.yunzhicloud.auth.web.command.manage.RoleCmd;
-import com.yunzhicloud.auth.web.rest.BaseRest;
 import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.web.vo.PageVO;

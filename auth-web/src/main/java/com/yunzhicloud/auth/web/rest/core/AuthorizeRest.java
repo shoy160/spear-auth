@@ -2,12 +2,11 @@ package com.yunzhicloud.auth.web.rest.core;
 
 import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
-import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.command.AuthorizeCmd;
 import com.yunzhicloud.auth.web.command.TokenCmd;
 import com.yunzhicloud.auth.web.config.AuthProperties;
 import com.yunzhicloud.auth.web.config.AuthorizeHandler;
-import com.yunzhicloud.auth.web.rest.BaseRest;
+import com.yunzhicloud.auth.web.rest.core.BaseRest;
 import com.yunzhicloud.auth.web.utils.UriUtil;
 import com.yunzhicloud.auth.web.vo.AccessTokenVO;
 import com.yunzhicloud.auth.web.vo.AppPublicConfigVO;
@@ -40,7 +39,6 @@ import java.util.Map;
 @AllArgsConstructor
 @RequestMapping("oauth")
 @Api(tags = "认证服务")
-@YzAuth(anonymous = true)
 public class AuthorizeRest extends BaseRest {
 
     private final AuthorizeHandler handler;

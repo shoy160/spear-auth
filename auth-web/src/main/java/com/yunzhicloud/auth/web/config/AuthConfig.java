@@ -25,48 +25,9 @@ public class AuthConfig {
     @Resource
     private AuthProperties config;
 
-
-    private Token getToken(AuthorizeHandler handler, PoolService poolService, ApplicationService appService) {
-        HttpServletRequest request = AuthContext.getRequest();
-        try {
-            Object value = request.getAttribute(AuthConstants.HEADER_ACCESS_TOKEN);
-            if (value != null) {
-                return (Token) value;
-            }
-            String accessToken = handler.getAccessToken();
-            if (CommonUtils.isEmpty(accessToken)) {
-                return null;
-            }
-            String secret = "", groupId = "";
-            String appId = handler.getAppId();
-            if (appId != null) {
-                ApplicationDTO app = appService.detail(appId);
-                if (app != null) {
-                    secret = app.getTokenSecret();
-                    groupId = app.getGroupId();
-                }
-            } else {
-                Object tenantId = tenantSolver().getTenantId();
-                if (tenantId != null) {
-                    groupId = tenantId.toString();
-                    PoolDTO pool = poolService.detail(groupId);
-                    if (pool != null) {
-                        secret = pool.getSecret();
-                    }
-                }
-            }
-            Token token = handler.verifyToken(accessToken, secret, groupId);
-            request.setAttribute(AuthConstants.HEADER_ACCESS_TOKEN, token);
-            return token;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
-    }
-
     @Bean
-    public TokenSolver tokenSolver(AuthorizeHandler handler, PoolService poolService, ApplicationService appService) {
-        return () -> getToken(handler, poolService, appService);
+    public TokenSolver tokenSolver(AuthorizeHandler handler) {
+        return () -> handler.getToken(true);
     }
 
     @Bean

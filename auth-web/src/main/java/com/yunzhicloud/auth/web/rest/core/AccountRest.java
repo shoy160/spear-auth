@@ -8,11 +8,10 @@ import com.yunzhicloud.auth.web.command.CodeLoginCmd;
 import com.yunzhicloud.auth.web.command.LoginCmd;
 import com.yunzhicloud.auth.web.config.AuthorizeHandler;
 import com.yunzhicloud.auth.web.filter.EnableAuth;
-import com.yunzhicloud.auth.web.rest.BaseRest;
+import com.yunzhicloud.auth.web.rest.core.BaseRest;
 import com.yunzhicloud.auth.web.vo.AccessTokenVO;
 import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.core.enums.ResultCode;
-import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.web.security.YzAuth;
 import com.yunzhicloud.web.vo.Token;
 import io.swagger.annotations.Api;
@@ -32,7 +31,6 @@ import javax.validation.Valid;
 @AllArgsConstructor
 @RequestMapping("account")
 @Api(tags = "账号服务")
-@YzAuth(anonymous = true)
 public class AccountRest extends BaseRest {
 
     private final ApplicationService appService;
@@ -42,7 +40,7 @@ public class AccountRest extends BaseRest {
     @EnableAuth
     @GetMapping
     @ApiOperation(value = "获取账号信息")
-    public ResultDTO info() {
+    public ResultDTO<UserDTO> info() {
         Token token = currentToken();
         if (token == null) {
             return fail(ResultCode.UN_AUTHORIZED);

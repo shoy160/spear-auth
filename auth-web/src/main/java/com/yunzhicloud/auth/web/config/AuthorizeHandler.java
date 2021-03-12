@@ -4,8 +4,10 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
+import com.yunzhicloud.auth.entity.dto.PoolDTO;
 import com.yunzhicloud.auth.entity.dto.UserDTO;
 import com.yunzhicloud.auth.service.ApplicationService;
+import com.yunzhicloud.auth.service.PoolService;
 import com.yunzhicloud.auth.web.utils.CookieUtil;
 import com.yunzhicloud.auth.web.vo.AccessTokenVO;
 import com.yunzhicloud.core.cache.Cache;
@@ -31,13 +33,62 @@ import java.util.concurrent.TimeUnit;
 public class AuthorizeHandler {
 
     private final Cache<String, String> cache;
+    private final PoolService poolService;
     private final ApplicationService appService;
     private final YzSession session;
+    private final AuthProperties config;
 
     private final static String CACHE_KEY_VERIFY = "auth:%s:verify:%s:%s";
     private final static String CACHE_KEY_REFRESH = "auth:%s:refresh:%s";
     private final static String CACHE_KEY_CODE = "auth:%s:code:%s";
     private final static String SPLIT_AUTHORIZATION = "\\s";
+
+    public Token getToken(boolean manageSite) {
+        HttpServletRequest request = AuthContext.getRequest();
+        try {
+            Object value = request.getAttribute(AuthConstants.HEADER_ACCESS_TOKEN);
+            if (value != null) {
+                return (Token) value;
+            }
+            String secret = "", groupId = "";
+            if (manageSite) {
+                ApplicationDTO app = appService.detail(config.getDefaultApp());
+                if (app == null) {
+                    return null;
+                }
+                groupId = app.getGroupId();
+                secret = app.getTokenSecret();
+            } else {
+                String appId = getAppId();
+                if (appId != null) {
+                    ApplicationDTO app = appService.detail(appId);
+                    if (app != null) {
+                        secret = app.getTokenSecret();
+                        groupId = app.getGroupId();
+                    }
+                } else {
+                    Object tenantId = session.getTenantId();
+                    if (tenantId != null) {
+                        groupId = tenantId.toString();
+                        PoolDTO pool = poolService.detail(groupId);
+                        if (pool != null) {
+                            secret = pool.getSecret();
+                        }
+                    }
+                }
+            }
+            String accessToken = getAccessToken(groupId);
+            if (CommonUtils.isEmpty(accessToken)) {
+                return null;
+            }
+            Token token = verifyToken(accessToken, secret, groupId);
+            request.setAttribute(AuthConstants.HEADER_ACCESS_TOKEN, token);
+            return token;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 
     public String saveToken(Token token, ApplicationDTO app) {
         String verifyToken = IdUtil.simpleUUID();
@@ -164,11 +215,14 @@ public class AuthorizeHandler {
         return JsonUtils.json(tokenJson, AccessTokenVO.class);
     }
 
-    private String getAccessTokenFromCookie() {
-        String groupId = session.tenantIdAsString();
-        ApplicationDTO app = currentApp();
-        if (app != null) {
-            groupId = app.getGroupId();
+    private String getAccessTokenFromCookie(String groupId) {
+        if (CommonUtils.isEmpty(groupId)) {
+            ApplicationDTO app = currentApp();
+            if (app != null) {
+                groupId = app.getGroupId();
+            } else {
+                groupId = session.tenantIdAsString();
+            }
         }
         String cookieName = AuthConstants.COOKIE_ACCESS_TOKEN.concat("-").concat(groupId);
         return CookieUtil.get(cookieName);
@@ -191,10 +245,10 @@ public class AuthorizeHandler {
         return split[1];
     }
 
-    public String getAccessToken() {
+    public String getAccessToken(String groupId) {
         String accessToken = getAccessTokenFromHeader();
         if (CommonUtils.isEmpty(accessToken)) {
-            accessToken = getAccessTokenFromCookie();
+            accessToken = getAccessTokenFromCookie(groupId);
         }
         return accessToken;
     }

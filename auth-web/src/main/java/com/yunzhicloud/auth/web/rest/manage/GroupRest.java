@@ -1,11 +1,7 @@
 package com.yunzhicloud.auth.web.rest.manage;
 
-import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
 import com.yunzhicloud.auth.entity.dto.GroupDTO;
-import com.yunzhicloud.auth.service.ApplicationService;
-import com.yunzhicloud.auth.web.command.manage.ApplicationCmd;
 import com.yunzhicloud.auth.web.command.manage.GroupCmd;
-import com.yunzhicloud.auth.web.rest.BaseRest;
 import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.web.vo.PageVO;
@@ -14,11 +10,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.List;
 

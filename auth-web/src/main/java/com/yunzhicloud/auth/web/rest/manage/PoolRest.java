@@ -4,7 +4,6 @@ import com.yunzhicloud.auth.entity.dto.PoolDTO;
 import com.yunzhicloud.auth.entity.dto.PoolStatisticDTO;
 import com.yunzhicloud.auth.service.PoolService;
 import com.yunzhicloud.auth.web.command.manage.PoolCmd;
-import com.yunzhicloud.auth.web.rest.BaseRest;
 import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.web.vo.PageVO;
