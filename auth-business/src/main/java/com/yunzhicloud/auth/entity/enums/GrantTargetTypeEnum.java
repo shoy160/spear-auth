@@ -3,22 +3,24 @@ package com.yunzhicloud.auth.entity.enums;
 import com.yunzhicloud.core.enums.ValueNameEnum;
 
 /**
- * 授权类型
+ * 授权对象类型
  *
  * @author shay
  * @date 2021/3/4
  */
-public enum GrantTypeEnum implements ValueNameEnum<Integer> {
+public enum GrantTargetTypeEnum implements ValueNameEnum<Integer> {
     /**
-     * 登录授权
+     * 用户
      */
-    User(1, "登录授权"),
-    Role(2, "资源授权");
+    User(1, "用户"),
+    Role(2, "角色"),
+    Group(3, "分组"),
+    Organization(4, "组织机构");
 
     final int value;
     final String name;
 
-    GrantTypeEnum(int value, String name) {
+    GrantTargetTypeEnum(int value, String name) {
         this.value = value;
         this.name = name;
     }

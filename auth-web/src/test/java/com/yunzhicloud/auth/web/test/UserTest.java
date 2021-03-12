@@ -25,32 +25,18 @@ import java.io.IOException;
  * @date 2021/3/1
  */
 @Slf4j
-@RunWith(YzCloudSpringRunner.class)
-@SpringBootTest(classes = AuthApplication.class)
-@YzCloudTest(value = AuthConstants.SERVICE_NAME)
-public class UserTest {
+public class UserTest extends BaseTest {
 
     @Resource
     private UserService service;
 
-    @Resource
-    private YzSession session;
-
-    private final SessionDTO currentSession;
-
-    public UserTest() {
-        currentSession = new SessionDTO("5b54589e4ab247c2a34a3bbc62c9e5ef", "yz_auth01");
-    }
-
     @Test
     public void createTest() {
-        try (Closeable ignored = session.use(currentSession)) {
+        useSession(() -> {
             log.info(session.userIdAsString());
-            UserDTO dto = service.createByEmail("test@qq.com", "123456", "shay01");
+            UserDTO dto = service.createByEmail("test@qq.com", "123456", "shay");
             log.info(JsonUtils.toJson(dto));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+        });
         log.info(session.userIdAsString());
     }
 

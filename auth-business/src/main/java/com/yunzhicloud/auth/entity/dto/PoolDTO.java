@@ -1,6 +1,9 @@
 package com.yunzhicloud.auth.entity.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.yunzhicloud.auth.entity.enums.RegisterRuleEnum;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
+import com.yunzhicloud.auth.entity.enums.VerifyTypeEnum;
 import com.yunzhicloud.data.domain.dto.BaseDateDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,6 +33,12 @@ public class PoolDTO extends BaseDateDTO {
      */
     @ApiModelProperty("用户池名称")
     private String name;
+
+    /**
+     * 用户池编码
+     */
+    @ApiModelProperty("用户池编码")
+    private String code;
 
     /**
      * 用户池描述
@@ -72,4 +81,46 @@ public class PoolDTO extends BaseDateDTO {
      */
     @ApiModelProperty("最后注册时间")
     private Date lastRegister;
+
+    /**
+     * 是否开启单点登录
+     */
+    @ApiModelProperty("是否开启单点登录")
+    private Boolean enableSso;
+
+    /**
+     * 安全域
+     */
+    @ApiModelProperty("安全域")
+    private String corsDomain;
+
+    /**
+     * JWT有效时间(秒),默认1296000
+     */
+    @ApiModelProperty("JWT有效时间")
+    private Integer jwtExpired;
+
+    /**
+     * 登录失败次数限制
+     */
+    @ApiModelProperty("登录失败次数限制")
+    private Integer failLoginLimit;
+
+    /**
+     * 登录失败时间段(秒)
+     */
+    @ApiModelProperty("登录失败时间段")
+    private Integer failLoginTime;
+
+    /**
+     * 验证规则：1.邮箱验证，2.手机验证
+     */
+    @ApiModelProperty("验证规则")
+    private VerifyTypeEnum verifyRule;
+
+    /**
+     * 注册控制：1.开启允许策略,2.开启禁止策略,4.禁止注册
+     */
+    @ApiModelProperty("验证规则")
+    private RegisterRuleEnum registerRule;
 }

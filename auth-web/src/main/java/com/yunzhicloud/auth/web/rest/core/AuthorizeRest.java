@@ -1,5 +1,6 @@
 package com.yunzhicloud.auth.web.rest.core;
 
+import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.auth.entity.dto.ApplicationDTO;
 import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.command.AuthorizeCmd;
@@ -12,6 +13,7 @@ import com.yunzhicloud.auth.web.vo.AccessTokenVO;
 import com.yunzhicloud.auth.web.vo.AppPublicConfigVO;
 import com.yunzhicloud.core.domain.dto.ResultDTO;
 import com.yunzhicloud.core.utils.CommonUtils;
+import com.yunzhicloud.web.YzCloudApplication;
 import com.yunzhicloud.web.security.YzAuth;
 import com.yunzhicloud.web.vo.Token;
 import io.swagger.annotations.Api;
@@ -41,16 +43,18 @@ import java.util.Map;
 @YzAuth(anonymous = true)
 public class AuthorizeRest extends BaseRest {
 
-    private final ApplicationService appService;
     private final AuthorizeHandler handler;
     private final AuthProperties config;
 
     @GetMapping("config")
     @ApiOperation(value = "应用公共配置")
     public ResultDTO<AppPublicConfigVO> config(
-            @ApiParam(value = "应用ID", required = true) @RequestParam String app_id
+            @ApiParam(value = "应用ID") @RequestParam(required = false) String app_id
     ) {
-        ApplicationDTO app = handler.currentApp(app_id, appService::getAndCheck);
+        if (CommonUtils.isEmpty(app_id)) {
+            app_id = config.getDefaultApp();
+        }
+        ApplicationDTO app = handler.currentApp(app_id);
         return success(toBean(app, AppPublicConfigVO.class));
     }
 
@@ -64,11 +68,14 @@ public class AuthorizeRest extends BaseRest {
             //判断登录状态
             Token token = currentToken();
             if (token != null) {
-                Map<String, Object> map = new HashMap<>(3);
-                String code = handler.saveCode(currentAccessToken(), app);
+                Map<String, Object> map = new HashMap<>(4);
+                String code = handler.saveCode(app);
                 map.put("code", code);
                 map.put("pool", app.getPoolId());
                 map.put("app_id", app.getId());
+                if (YzCloudApplication.isDev()) {
+                    map.put("secret", app.getSecret());
+                }
                 String redirect = app.getRedirectLogin();
                 if (!CommonUtils.isEmpty(cmd.getRedirect_uri())) {
                     redirect = cmd.getRedirect_uri();
@@ -77,7 +84,26 @@ public class AuthorizeRest extends BaseRest {
                 response.sendRedirect(uri);
             } else {
                 //跳转登录
-                UriUtil.redirectToLogin(config, app);
+                UriUtil.redirectToLogin(config, app, "code");
+            }
+        } else if (cmd.typeToken()) {
+            //判断登录状态
+            Token token = currentToken();
+            if (token != null) {
+                String redirect = app.getRedirectLogin();
+                if (!CommonUtils.isEmpty(cmd.getRedirect_uri())) {
+                    redirect = cmd.getRedirect_uri();
+                }
+                Map<String, Object> map = new HashMap<>(2);
+                map.put("app_id", app.getId());
+                map.put("type", "token");
+                redirect = UriUtil.build(redirect, map);
+                AccessTokenVO tokenVO = handler.currentAccessToken(token, app);
+                String uri = redirect.concat("#token=").concat(tokenVO.getAccess_token());
+                response.sendRedirect(uri);
+            } else {
+                //跳转登录
+                UriUtil.redirectToLogin(config, app, "token");
             }
         }
     }
@@ -91,27 +117,24 @@ public class AuthorizeRest extends BaseRest {
             if (!app.getSecret().equalsIgnoreCase(cmd.getClient_secret())) {
                 return fail("应用秘钥不匹配");
             }
-            String authToken = handler.checkCode(app.getPoolId(), cmd.getCode());
-            if (CommonUtils.isNotEmpty(authToken)) {
-                //获取凭证
-                Token token = currentToken();
-                if (token == null) {
-                    return fail("用户尚未登录");
-                }
-                AccessTokenVO tokenVO = handler.generateToken(token, app);
-                return success(tokenVO);
-            } else {
-                return fail("授权码已失效");
+            handler.checkCode(app.getGroupId(), cmd.getCode());
+            //获取凭证
+            Token token = currentToken();
+            if (token == null) {
+                return fail("用户尚未登录");
             }
+            AccessTokenVO tokenVO = handler.currentAccessToken(token, app);
+            return success(tokenVO);
         } else if (cmd.typeRefresh()) {
             //刷新Token
             if (!app.getSecret().equalsIgnoreCase(cmd.getClient_secret())) {
                 return fail("应用秘钥不匹配");
             }
-            Token token = handler.checkRefreshToken(cmd.getClient_id(), cmd.getRefresh_token());
+            Token token = handler.checkRefreshToken(app, cmd.getRefresh_token());
             if (token == null) {
                 return fail("授权刷新码已失效");
             }
+            handler.removeToken(app, token);
             AccessTokenVO tokenVO = handler.generateToken(token, app);
             return success(tokenVO);
         }
@@ -124,10 +147,11 @@ public class AuthorizeRest extends BaseRest {
     public ResultDTO<AccessTokenVO> sync(
             @ApiParam(value = "应用ID", required = true) @RequestParam String app_id
     ) {
+        getRequest().setAttribute(AuthConstants.SESSION_IGNORE_HEADER, true);
         Token token = currentToken();
         if (token != null) {
             ApplicationDTO app = currentApp();
-            AccessTokenVO tokenVO = handler.generateToken(token, app);
+            AccessTokenVO tokenVO = handler.currentAccessToken(token, app);
             return success(tokenVO);
         }
         return success(new AccessTokenVO());
@@ -138,7 +162,8 @@ public class AuthorizeRest extends BaseRest {
     public ResultDTO logout(
             @ApiParam(value = "应用ID") @RequestParam(required = false) String app_id
     ) {
-        handler.removeToken(app_id, currentToken());
+        ApplicationDTO app = currentApp();
+        handler.removeToken(app, currentToken());
         return success();
     }
 }

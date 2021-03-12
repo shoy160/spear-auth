@@ -19,6 +19,10 @@ public class PoolCmd {
     @ApiModelProperty("用户池名称")
     private String name;
 
+    @NotBlank(message = "用户池编码不能为空")
+    @ApiModelProperty("用户池编码")
+    private String code;
+
     @ApiModelProperty("用户池二级域名")
     private String domain;
 

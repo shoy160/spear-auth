@@ -43,7 +43,7 @@ public abstract class BaseRest extends BaseController {
     }
 
     protected ApplicationDTO currentApp() {
-        return handler.currentApp(null, service::getAndCheck);
+        return handler.currentApp();
     }
 
     protected String currentAccessToken() {

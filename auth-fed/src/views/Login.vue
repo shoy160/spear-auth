@@ -67,7 +67,8 @@
   </div>
 </template>
 <script>
-import request from "@/utils/request"
+import { getUrl } from "@/utils/request"
+import { getConfig, syncToken, login, loginByCode } from "@/service/index"
 import Cookie from "js-cookie"
 // import User from "@ant-design/icons/User"
 export default {
@@ -79,6 +80,7 @@ export default {
     return {
       loginType: "password",
       appId: "",
+      type: "code",
       redirect: "",
       config: {},
       model: {
@@ -102,6 +104,7 @@ export default {
   mounted() {
     this.appId = this.$route.query.app_id
     this.redirect = this.$route.query.redirect_uri
+    this.type = this.$route.query.type || "code"
     this.getConfig()
   },
   methods: {
@@ -116,50 +119,32 @@ export default {
       document.title = `${this.config.name} 登录 - 云智云统一认证中心`
     },
     getConfig() {
-      request
-        .get(`oauth/config`, {
-          params: {
-            app_id: this.appId,
-          },
-        })
-        .then((json) => {
-          this.config = json.data
-          Cookie.set("auth_pool_id", this.config.poolId)
-          if (!this.redirect) {
-            this.redirect = request.url(
-              `oauth/authorize?client_id=${this.appId}&response_type=code`
-            )
-          }
-          this.verifyToken()
-          this.changeTitle()
-        })
+      getConfig(this.appId).then((json) => {
+        this.config = json.data
+        this.appId = this.config.id
+        Cookie.set("auth_pool_id", this.config.poolId)
+        if (!this.redirect) {
+          this.redirect = getUrl(
+            `oauth/authorize?client_id=${this.appId}&response_type=${this.type}`
+          )
+        }
+        this.verifyToken()
+        this.changeTitle()
+      })
     },
     verifyToken() {
-      // const token = Cookie.get("auth_token")
-      // if (token) {
-      //   location.href = this.redirect
-      //   return
-      // }
-      request
-        .get(`oauth/sync`, {
-          params: {
-            app_id: this.appId,
-          },
-        })
-        .then((json) => {
-          if (json && json.data.access_token) {
-            this.handlerLogined(json)
-          }
-        })
+      syncToken(this.appId).then((json) => {
+        if (json && json.data.access_token) {
+          this.handlerLogined(json)
+        }
+      })
     },
     changeType(type) {
       this.loginType = type
     },
     handlerLogined(json) {
       console.log(json)
-      Cookie.set("auth_token", json.data.access_token, {
-        expires: json.data.expires_in / (60 * 60 * 24),
-      })
+      Cookie.set("auth_token", json.data.access_token)
       Cookie.set("refresh_token", json.data.refresh_token, {
         expires: (json.data.expires_in * 2) / (60 * 60 * 24),
       })
@@ -170,21 +155,13 @@ export default {
     handlerLogin() {
       //
       if (this.loginType === "password") {
-        request
-          .post("account/login", {
-            appId: this.appId,
-            account: this.model.account,
-            password: this.model.password,
-          })
-          .then(this.handlerLogined)
+        login(this.appId, this.model.account, this.model.password).then(
+          this.handlerLogined
+        )
       } else if (this.loginType === "code") {
-        request
-          .post("account/login/code", {
-            appId: this.appId,
-            mobile: this.model.mobile,
-            vcode: this.model.vcode,
-          })
-          .then(this.handlerLogined)
+        loginByCode(this.appId, this.model.mobile, this.model.vcode).then(
+          this.handlerLogined
+        )
       }
     },
   },

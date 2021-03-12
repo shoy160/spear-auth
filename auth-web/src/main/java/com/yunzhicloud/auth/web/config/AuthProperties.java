@@ -24,5 +24,10 @@ public class AuthProperties {
     /**
      * 默认用户池ID
      */
-    private String defaultPool = "yz_auth";
+    private String defaultPool = "ur2sqzodgf49becg";
+
+    /**
+     * 默认应用ID
+     */
+    private String defaultApp = "zkdvmn29r6urrmkx";
 }

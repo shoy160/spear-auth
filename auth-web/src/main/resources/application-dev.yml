@@ -1,3 +1,28 @@
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#server:
+#  port: 9862
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://175.153.165.127:13306/db_auth?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
+#    username: root
+#    password: WG9cgtANLeggNJKq
+#    hikari:
+#      pool-name: hikari-sso
+#      maximum-pool-size: 20
+#      minimum-idle: 5
+#      idle-timeout: 30000
+#      max-lifetime: 120000
+#      connection-timeout: 30000
+#      connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+#      connection-test-query: SELECT 1
+#  redis:
+#    host: 175.153.165.127
+#    port: 16379
+#    database: 5
+#    password: 92Au2Xo7nf5QapAG
+#auth:
+#  login-site: http://192.168.2.14:8080/login
+#  default-pool: 148c083380021192
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

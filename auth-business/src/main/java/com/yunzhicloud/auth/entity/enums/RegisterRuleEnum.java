@@ -3,22 +3,21 @@ package com.yunzhicloud.auth.entity.enums;
 import com.yunzhicloud.core.enums.ValueNameEnum;
 
 /**
- * 授权类型
- *
  * @author shay
- * @date 2021/3/4
+ * @date 2021/3/8
  */
-public enum GrantTypeEnum implements ValueNameEnum<Integer> {
+public enum RegisterRuleEnum implements ValueNameEnum<Integer> {
     /**
-     * 登录授权
+     * 后台添加
      */
-    User(1, "登录授权"),
-    Role(2, "资源授权");
+    Allow(1, "允许策略"),
+    Deny(2, "禁止策略"),
+    Forbidden(4, "禁止注册");
 
-    final int value;
-    final String name;
+    int value;
+    String name;
 
-    GrantTypeEnum(int value, String name) {
+    RegisterRuleEnum(final int value, final String name) {
         this.value = value;
         this.name = name;
     }

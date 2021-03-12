@@ -1,7 +1,7 @@
 package com.yunzhicloud.auth.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.yunzhicloud.auth.entity.po.LoginPO;
+import com.yunzhicloud.auth.entity.po.UserTokenPO;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
  * @date 2021/3/5
  */
 @Repository
-public interface LoginMapper extends BaseMapper<LoginPO> {
+public interface UserTokenMapper extends BaseMapper<UserTokenPO> {
 }

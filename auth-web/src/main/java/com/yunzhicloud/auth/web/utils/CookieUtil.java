@@ -1,5 +1,6 @@
 package com.yunzhicloud.auth.web.utils;
 
+import com.yunzhicloud.auth.core.AuthConstants;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.web.security.AuthContext;
 

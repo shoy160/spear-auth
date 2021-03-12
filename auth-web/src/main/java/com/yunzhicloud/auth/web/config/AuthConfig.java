@@ -47,8 +47,8 @@ public class AuthConfig {
             if (appId != null) {
                 ApplicationDTO app = appService.detail(appId);
                 if (app != null) {
-                    secret = app.getPoolSecret();
-                    groupId = app.getPoolId();
+                    secret = app.getTokenSecret();
+                    groupId = app.getGroupId();
                 }
             } else {
                 Object tenantId = tenantSolver().getTenantId();

@@ -12,9 +12,11 @@ import com.yunzhicloud.auth.entity.po.PoolPO;
 import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.core.cache.Cache;
 import com.yunzhicloud.core.domain.dto.PagedDTO;
+import com.yunzhicloud.core.exception.BusinessException;
 import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.EnumUtils;
+import com.yunzhicloud.core.utils.IdentityUtils;
 import com.yunzhicloud.data.utils.PagedUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,8 +41,13 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
         ApplicationDTO dto = CommonUtils.toBean(entity, ApplicationDTO.class);
         PoolPO pool = poolMapper.selectById(entity.getPoolId());
-        if (pool != null) {
-            dto.setPoolSecret(pool.getSecret());
+        if (pool != null && pool.isEnableSso()) {
+            //开启单点登录 以用户池为准
+            dto.setTokenSecret(pool.getSecret());
+            dto.setEnableSso(true);
+        } else {
+            dto.setEnableSso(false);
+            dto.setTokenSecret(dto.getSecret());
         }
         dto.setState(EnumUtils.getEnum(entity.getState(), StateEnum.class));
         return dto;
@@ -48,10 +55,15 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     public ApplicationDTO create(String name, String redirect, String logo, String domain) {
-        ApplicationPO entity = new ApplicationPO();
-        entity.setId(RandomUtil.randomString(16));
-        entity.setSecret(RandomUtil.randomString(32));
+        String userId = session.requiredUserId(String.class);
+        // 用户权限
         String poolId = this.session.requiredTenantId(String.class);
+        if (mapper.existsDomain(domain)) {
+            throw new BusinessException("应用域名已存在");
+        }
+        ApplicationPO entity = new ApplicationPO();
+        entity.setId(IdentityUtils.string16Id());
+        entity.setSecret(RandomUtil.randomString(32));
         entity.setPoolId(poolId);
         entity.setName(name);
         entity.setLogo(logo);

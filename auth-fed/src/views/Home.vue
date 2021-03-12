@@ -15,65 +15,45 @@
 </template>
 
 <script>
-import request from "@/utils/request"
-// import Cookie from "js-cookie"
+import { getAccessToken, getAccount, logout } from "@/service/index"
+import Cookie from "js-cookie"
 export default {
   name: "Home",
   data() {
     return {
+      type: "code",
       code: "",
       appId: "",
+      secret: "",
       token: {},
       user: {},
     }
   },
   mounted() {
     this.code = this.$route.query.code
+    this.type = this.$route.query.type || "code"
     this.appId = this.$route.query.app_id
-    this.getAccessToken()
+    this.secret = this.$route.query.secret
+
+    if (this.code) {
+      this.getAccessToken()
+    } else if (location.hash) {
+      var split = location.hash.split("=")
+      if (split.length == 2 && split[0] === "#token") {
+        this.token = split[1]
+        Cookie.set("auth_token", this.token)
+        this.getUserInfo()
+      }
+    }
   },
   methods: {
     getAccessToken() {
-      request
-        .get("oauth/token", {
-          params: {
-            grant_type: "authorization_code",
-            client_id: this.appId,
-            client_secret: "yvzoww1vhinsir4rmorteirfz6h4ersn",
-            code: this.code,
-          },
-        })
+      getAccessToken(this.appId, this.secret, this.code)
         .then((json) => {
           this.token = json.data
           this.getUserInfo()
         })
-    },
-    getUserInfo() {
-      request
-        .get("account", {
-          params: {
-            app_id: this.appId,
-          },
-          headers: {
-            Authorization: `${this.token.token_type} ${this.token.access_token}`,
-          },
-        })
-        .then((json) => {
-          this.user = json.data
-        })
-    },
-    handleLogout() {
-      request
-        .put(
-          "oauth/logout",
-          {},
-          {
-            params: {
-              app_id: this.appId,
-            },
-          }
-        )
-        .then(() => {
+        .catch(() => {
           this.$router.push({
             path: "/login",
             query: {
@@ -81,6 +61,24 @@ export default {
             },
           })
         })
+    },
+    getUserInfo() {
+      getAccount(this.appId).then((json) => {
+        this.user = json.data
+      })
+    },
+    handleLogout() {
+      Cookie.remove("auth_token")
+      Cookie.remove("refresh_token")
+      logout(this.appId).then(() => {
+        this.$router.push({
+          path: "/login",
+          query: {
+            app_id: this.appId,
+            type: this.type,
+          },
+        })
+      })
     },
   },
 }

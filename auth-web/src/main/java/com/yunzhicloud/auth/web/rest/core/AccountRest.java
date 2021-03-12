@@ -57,6 +57,9 @@ public class AccountRest extends BaseRest {
         ApplicationDTO app = appService.getAndCheck(cmd.getAppId());
         UserDTO dto = userService.login(cmd.getAccount(), cmd.getPassword(), cmd.getCode());
         AccessTokenVO vo = handler.generateToken(dto, app);
+        String userAgent = getRequest().getHeader("User-Agent");
+        String ip = getRequest().getRemoteHost();
+        userService.updateLogin(dto.getId(), ip, userAgent);
         return success(vo);
     }
 
@@ -64,8 +67,11 @@ public class AccountRest extends BaseRest {
     @ApiOperation(value = "验证码登录")
     public ResultDTO<AccessTokenVO> codeLogin(@Valid @RequestBody CodeLoginCmd cmd) {
         ApplicationDTO app = appService.getAndCheck(cmd.getAppId());
-        UserDTO dto = userService.loginByMobile(cmd.getMobile(), cmd.getCode(), cmd.getVerifyCode());
+        UserDTO dto = userService.loginByMobile(cmd.getMobile(), cmd.getVerifyCode());
         AccessTokenVO vo = handler.generateToken(dto, app);
+        String userAgent = getRequest().getHeader("User-Agent");
+        String ip = getRequest().getRemoteHost();
+        userService.updateLogin(dto.getId(), ip, userAgent);
         return success(vo);
     }
 

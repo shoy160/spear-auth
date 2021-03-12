@@ -31,7 +31,13 @@ public class ApplicationDTO extends BaseDateDTO {
      * 用户池秘钥
      */
     @ApiModelProperty("用户池秘钥")
-    private String poolSecret;
+    private String tokenSecret;
+
+    /**
+     * 是否开启单点登录
+     */
+    @ApiModelProperty("用户池秘钥")
+    private Boolean enableSso;
 
     /**
      * 应用名称
@@ -98,4 +104,13 @@ public class ApplicationDTO extends BaseDateDTO {
      */
     @ApiModelProperty("状态")
     private StateEnum state;
+
+    /**
+     * 获取分组ID
+     *
+     * @return groupId
+     */
+    public String getGroupId() {
+        return enableSso ? poolId : id;
+    }
 }

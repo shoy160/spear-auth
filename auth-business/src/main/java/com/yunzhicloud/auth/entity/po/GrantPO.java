@@ -38,10 +38,16 @@ public class GrantPO extends BaseAuditPO {
     private String namespace;
 
     /**
-     * 授权类型
+     * 授权类型：1.登录授权，2.资源授权
      */
     @TableField("fd_type")
     private int type;
+
+    /**
+     * 授权对象类型：1.用户，2.角色，3.分组，4.机构
+     */
+    @TableField("fd_target_type")
+    private int targetType;
 
     /**
      * 授权对象
@@ -54,5 +60,11 @@ public class GrantPO extends BaseAuditPO {
      */
     @TableField("fd_target_name")
     private String targetName;
+
+    /**
+     * 授权策略：1.允许，2.禁止
+     */
+    @TableField("fd_policy")
+    private int policy;
 }
 

@@ -1,6 +1,7 @@
 package com.yunzhicloud.auth.test;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
 /**
  * @author shay
@@ -8,4 +9,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ApplicationServiceTest {
+
+    @Test
+    public void test(){
+    }
 }

@@ -19,8 +19,9 @@ import java.util.Date;
 @Getter
 @Setter
 @TableName("t_login")
-public class LoginPO extends BaseAuditPO {
+public class UserTokenPO extends BaseAuditPO {
     private static final long serialVersionUID = 1L;
+
     /**
      * fd_id
      */

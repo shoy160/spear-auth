@@ -77,6 +77,12 @@ public class ApplicationPO extends BaseAuditPO {
     private String poolId;
 
     /**
+     * 访问控制：1.允许所有用户访问，2.拒绝所有用户访问
+     */
+    @TableField("fd_access_state")
+    private int accessState;
+
+    /**
      * 授权码过期时间(秒）
      */
     @TableField("fd_time_code")

@@ -35,18 +35,21 @@ public class UserRest extends BaseRest {
     @PostMapping("email")
     @ApiOperation(value = "创建邮箱用户")
     public ResultDTO<UserDTO> createEmail(@Valid @RequestBody UserEmailCreateCmd cmd) {
+        //todo
         return success(new UserDTO());
     }
 
     @PostMapping("mobile")
     @ApiOperation(value = "创建手机用户")
     public ResultDTO<UserDTO> createMobile(@Valid @RequestBody UserMobileCreateCmd cmd) {
+        //todo
         return success(new UserDTO());
     }
 
     @GetMapping("paged")
     @ApiOperation(value = "用户列表")
     public ResultDTO<PagedDTO<UserDTO>> paged(@Valid PageVO page) {
+        //todo
         List<UserDTO> list = new ArrayList<>();
         PagedDTO<UserDTO> pagedDTO = new PagedDTO<>(0, list);
         return success(pagedDTO);
@@ -56,6 +59,7 @@ public class UserRest extends BaseRest {
     @ApiOperation(value = "用户详情")
     public ResultDTO<UserDTO> detail(
             @ApiParam(value = "用户ID", required = true) @RequestParam String id) {
+        //todo
         UserDTO dto = new UserDTO();
         dto.setId(id);
         return success(dto);
@@ -67,6 +71,7 @@ public class UserRest extends BaseRest {
             @ApiParam(value = "用户ID", required = true) @RequestParam String id,
             @Valid @RequestBody UserEditCmd cmd
     ) {
+        //todo
         return success();
     }
 
@@ -75,6 +80,7 @@ public class UserRest extends BaseRest {
     public ResultDTO delete(
             @ApiParam(value = "用户ID", required = true) @RequestParam String id
     ) {
+        //todo
         return success();
     }
 }

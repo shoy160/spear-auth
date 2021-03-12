@@ -1,6 +1,7 @@
 package com.yunzhicloud.auth.entity.dto;
 
 import com.yunzhicloud.auth.entity.enums.GrantPolicyEnum;
+import com.yunzhicloud.auth.entity.enums.GrantTargetTypeEnum;
 import com.yunzhicloud.auth.entity.enums.GrantTypeEnum;
 import com.yunzhicloud.auth.entity.enums.StateEnum;
 import com.yunzhicloud.data.domain.dto.BaseDateDTO;
@@ -29,10 +30,17 @@ public class GrantDTO extends BaseDateDTO {
     private String namespace;
 
     /**
-     * 授权类型
+     * 授权类型：1.登录授权，2.资源授权
      */
     @ApiModelProperty("授权类型")
     private GrantTypeEnum type;
+
+    /**
+     * 授权对象类型：1.用户，2.角色，3.分组，4.机构
+     */
+    @ApiModelProperty("授权对象类型")
+    private GrantTargetTypeEnum targetType;
+
     /**
      * 授权对象ID
      */
@@ -48,10 +56,4 @@ public class GrantDTO extends BaseDateDTO {
      */
     @ApiModelProperty("授权策略")
     private GrantPolicyEnum policy;
-
-    /**
-     * 授权状态
-     */
-    @ApiModelProperty("授权状态")
-    private StateEnum state;
 }

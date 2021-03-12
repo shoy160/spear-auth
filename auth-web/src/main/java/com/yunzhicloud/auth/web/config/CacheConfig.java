@@ -1,7 +1,7 @@
 package com.yunzhicloud.auth.web.config;
 
 import com.yunzhicloud.core.cache.Cache;
-import com.yunzhicloud.data.cache.RedisCache;
+import com.yunzhicloud.cache.RedisCache;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

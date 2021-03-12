@@ -1,9 +1,10 @@
 package com.yunzhicloud.auth.service.impl;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.yunzhicloud.auth.dao.PoolMapper;
 import com.yunzhicloud.auth.dao.UserMapper;
 import com.yunzhicloud.auth.entity.dto.UserDTO;
@@ -17,10 +18,13 @@ import com.yunzhicloud.core.cache.Cache;
 import com.yunzhicloud.core.exception.BusinessException;
 import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.CommonUtils;
+import com.yunzhicloud.core.utils.EncryptionUtil;
 import com.yunzhicloud.core.utils.EnumUtils;
+import com.yunzhicloud.core.utils.IdentityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -70,13 +74,17 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("用户已存在");
         }
         UserPO entity = new UserPO();
-        entity.setId(IdUtil.simpleUUID());
+        entity.setId(IdentityUtils.string16Id());
         entity.setPoolId(poolId);
         entity.setEmail(email);
         entity.setMobile(mobile);
         entity.setAccount(account);
-        //密码
-        entity.setPassword(password);
+        if (CommonUtils.isNotEmpty(password)) {
+            String salt = RandomUtil.randomString(16);
+            entity.setPasswordSalt(salt);
+            // 密码
+            entity.setPassword(EncryptionUtil.md5(String.format("%s+%s", password, salt)));
+        }
         mapper.insert(entity);
         return convertToDto(entity);
     }
@@ -92,6 +100,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO login(String account, String password, String verifyCode) {
+        // 验证码
         String poolId = session.requiredTenantId(String.class);
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(UserPO::getPoolId, poolId)
@@ -106,13 +115,10 @@ public class UserServiceImpl implements UserService {
         if (entity == null) {
             throw new BusinessException("账号不存在");
         }
-        if (!password.equalsIgnoreCase(entity.getPassword())) {
+        String pwdMd5 = EncryptionUtil.md5(String.format("%s+%s", password, entity.getPasswordSalt()));
+        if (!pwdMd5.equalsIgnoreCase(entity.getPassword())) {
             throw new BusinessException("登录密码不正确");
         }
-        entity.setLastLoginIp("127.0.0.1");
-        entity.setLoginCount(entity.getLoginCount() + 1);
-        //todo 登录日志
-        mapper.updateById(entity);
         return convertToDto(entity);
     }
 
@@ -135,14 +141,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO loginByMobile(String mobile, String code, String verifyCode) {
+    public UserDTO loginByMobile(String mobile, String code) {
         //验证码
         String poolId = session.requiredTenantId(String.class);
         String verifyKey = String.format(VERIFY_CODE_CACHE_KEY, poolId, mobile);
         String currentCode = cache.get(verifyKey);
-
         if (CommonUtils.isEmpty(currentCode) || currentCode.equalsIgnoreCase(code)) {
-            throw new BusinessException("短信验证码不正确");
+            throw new BusinessException("验证码已失效");
         }
 
         LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<>();
@@ -154,5 +159,17 @@ public class UserServiceImpl implements UserService {
         }
         cache.remove(verifyKey);
         return convertToDto(entity);
+    }
+
+    @Override
+    public void updateLogin(String id, String ip, String userAgent) {
+        LambdaUpdateWrapper<UserPO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(UserPO::getId, id)
+                .set(UserPO::getLastLoginIp, ip)
+                .set(UserPO::getLastLoginDate, new Date())
+                .setSql("fd_login_count=fd_login_count+1");
+        //todo 登录日志
+
+        mapper.update(null, updateWrapper);
     }
 }

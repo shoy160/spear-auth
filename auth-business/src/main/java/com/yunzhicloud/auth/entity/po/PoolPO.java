@@ -29,16 +29,22 @@ public class PoolPO extends BaseAuditPO {
     private String id;
 
     /**
+     * 身份池名称
+     */
+    @TableField("fd_name")
+    private String name;
+
+    /**
      * 身份池秘钥
      */
     @TableField("fd_secret")
     private String secret;
 
     /**
-     * 身份池名称
+     * 身份池编码
      */
-    @TableField("fd_name")
-    private String name;
+    @TableField("fd_code")
+    private String code;
 
     /**
      * 身份池描述
@@ -74,7 +80,7 @@ public class PoolPO extends BaseAuditPO {
      * 租户ID(所属用户ID)
      */
     @TableField("fd_tenant_id")
-    private int tenantId;
+    private String tenantId;
 
     /**
      * 最后注册时间
@@ -92,7 +98,7 @@ public class PoolPO extends BaseAuditPO {
      * 是否开启单点登录
      */
     @TableField("fd_enable_sso")
-    private int enableSso;
+    private boolean enableSso;
 
     /**
      * 安全域
@@ -110,19 +116,13 @@ public class PoolPO extends BaseAuditPO {
      * 登录失败次数限制
      */
     @TableField("fd_fail_login_limit")
-    private int failLoginLimit;
+    private Integer failLoginLimit;
 
     /**
      * 登录失败时间段(秒)
      */
     @TableField("fd_fail_login_time")
     private Integer failLoginTime;
-
-    /**
-     * 登录失败次数
-     */
-    @TableField("fd_fail_login_count")
-    private Integer failLoginCount;
 
     /**
      * 验证规则：1.邮箱验证，2.手机验证
@@ -138,6 +138,7 @@ public class PoolPO extends BaseAuditPO {
 
     public PoolPO() {
         setState(StateEnum.Normal.getValue());
+        setJwtExpired(1296000);
     }
 }
 

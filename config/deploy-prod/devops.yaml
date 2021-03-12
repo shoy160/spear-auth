@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: business-auth-v1
-  namespace: yunzhicloud-framework
+  namespace: business-center-prod
   labels:
     app: business-auth
     app.kubernetes.io/name: business-center
@@ -30,14 +30,14 @@ spec:
       annotations:
         kubesphere.io/containerSecrets: '{"business-auth":"harbor"}'
     spec:
-      # volumes:
-      #   - name: volume-${config-key}
-      #     configMap:
-      #       name: web-config
-      #       items:
-      #         - key: ${config-key}
-      #           path: application-prod.properties
-      #       defaultMode: 420
+       volumes:
+         - name: volume-business-auth
+           configMap:
+             name: web-config
+             items:
+               - key: application.yml
+                 path: application.yml
+             defaultMode: 420
       containers:
         - image: $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:$TAG_NAME
           imagePullPolicy: Always
@@ -58,11 +58,11 @@ spec:
             requests:
               cpu: 30m
               memory: 30Mi
-          # volumeMounts:
-          #   - name: volume-${config-key}
-          #     readOnly: true
-          #     mountPath: /publish/config/application-prod.properties
-          #     subPath: application-prod.properties
+           volumeMounts:
+             - name: volume-business-auth
+               readOnly: true
+               mountPath: /publish/config/application.yml
+               subPath: application.yml
            livenessProbe:
              httpGet:
                path: /actuator/health/liveness

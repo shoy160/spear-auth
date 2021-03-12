@@ -50,12 +50,20 @@ public interface UserService {
     /**
      * 手机验证码登录
      *
-     * @param mobile     手机号
-     * @param code       图形验证码
-     * @param verifyCode 短信验证码
+     * @param mobile 手机号
+     * @param code   短信验证码
      * @return dto
      */
-    UserDTO loginByMobile(String mobile, String code, String verifyCode);
+    UserDTO loginByMobile(String mobile, String code);
+
+    /**
+     * 更新登录
+     *
+     * @param id        id
+     * @param ip        ip
+     * @param userAgent userAgent
+     */
+    void updateLogin(String id, String ip, String userAgent);
 
     /**
      * 手机号创建
@@ -79,4 +87,6 @@ public interface UserService {
     default UserDTO createByEmail(String email, String password, String account) {
         return create(email, null, password, account);
     }
+
+
 }

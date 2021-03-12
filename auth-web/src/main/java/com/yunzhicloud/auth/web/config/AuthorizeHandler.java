@@ -9,7 +9,8 @@ import com.yunzhicloud.auth.service.ApplicationService;
 import com.yunzhicloud.auth.web.utils.CookieUtil;
 import com.yunzhicloud.auth.web.vo.AccessTokenVO;
 import com.yunzhicloud.core.cache.Cache;
-import com.yunzhicloud.core.lang.Func;
+import com.yunzhicloud.core.exception.BusinessException;
+import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.JsonUtils;
 import com.yunzhicloud.web.security.AuthContext;
@@ -17,6 +18,7 @@ import com.yunzhicloud.web.vo.Token;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -30,34 +32,42 @@ import java.util.concurrent.TimeUnit;
 public class AuthorizeHandler {
 
     private final Cache<String, String> cache;
+    private final ApplicationService appService;
+    private final YzSession session;
 
-    private final static String CACHE_KEY_VERIFY = "auth:verify:%s:%s:%s";
-    private final static String CACHE_KEY_REFRESH = "auth:refresh:%s:%s";
-    private final static String CACHE_KEY_CODE = "auth:code:%s:%s";
-    private final static String COOKIE_NAME = "auth_token";
+    private final static String CACHE_KEY_VERIFY = "auth:%s:verify:%s:%s";
+    private final static String CACHE_KEY_REFRESH = "auth:%s:refresh:%s";
+    private final static String CACHE_KEY_CODE = "auth:%s:code:%s";
     private final static String SPLIT_AUTHORIZATION = "\\s";
 
     public String saveToken(Token token, ApplicationDTO app) {
         String verifyToken = IdUtil.simpleUUID();
         token.setClaimValue(AuthConstants.CLAIM_VERIFY, verifyToken);
-        String verifyKey = String.format(CACHE_KEY_VERIFY, app.getPoolId(), token.getId(), verifyToken);
-        cache.put(verifyKey, "1", app.getTimeAccess(), TimeUnit.SECONDS);
         Date expireAt = new Date(System.currentTimeMillis() + app.getTimeAccess() * 1000);
-        String accessToken = token.jwt(app.getPoolSecret(), expireAt);
-        CookieUtil.set(COOKIE_NAME, accessToken, app.getTimeCookie());
+        String accessToken = token.jwt(app.getTokenSecret(), expireAt);
+        String cookieName = AuthConstants.COOKIE_ACCESS_TOKEN.concat("-").concat(app.getGroupId());
+        CookieUtil.set(cookieName, accessToken, app.getTimeCookie());
         return accessToken;
     }
 
-    public void removeToken(String appId, Token token) {
+    public void removeToken(ApplicationDTO app, Token token) {
         if (token == null) {
             return;
         }
-        if (CommonUtils.isNotEmpty(appId)) {
+        String cookieName = AuthConstants.COOKIE_ACCESS_TOKEN;
+        if (app != null) {
+            AccessTokenVO tokenVO = currentAccessToken(token, app);
+            String groupId = app.getGroupId();
             String verify = token.getClaimValue(AuthConstants.CLAIM_VERIFY, String.class);
-            String verifyKey = String.format(CACHE_KEY_VERIFY, appId, token.getId(), verify);
+            String verifyKey = String.format(CACHE_KEY_VERIFY, groupId, token.getId(), verify);
             cache.remove(verifyKey);
+            if (tokenVO != null) {
+                String refreshKey = String.format(CACHE_KEY_REFRESH, groupId, tokenVO.getRefresh_token());
+                cache.remove(refreshKey);
+            }
+            cookieName = cookieName.concat("-").concat(app.getGroupId());
         }
-        CookieUtil.set(COOKIE_NAME, null, -1);
+        CookieUtil.set(cookieName, null, -1);
     }
 
     public Token verifyToken(String accessToken, String secret, String groupId) {
@@ -79,31 +89,35 @@ public class AuthorizeHandler {
         return token;
     }
 
-    public String saveCode(String accessToken, ApplicationDTO app) {
+    public String saveCode(ApplicationDTO app) {
         String code = RandomUtil.randomString(15);
-        String key = String.format(CACHE_KEY_CODE, app.getPoolId(), code);
-        cache.put(key, accessToken, app.getTimeCode(), TimeUnit.SECONDS);
+        String groupId = app.getGroupId();
+        String key = String.format(CACHE_KEY_CODE, groupId, code);
+        cache.put(key, "1", app.getTimeCode(), TimeUnit.SECONDS);
         return code;
     }
 
-    public String checkCode(String groupId, String code) {
+    public void checkCode(String groupId, String code) {
         String key = String.format(CACHE_KEY_CODE, groupId, code);
         String accessToken = cache.get(key);
         if (CommonUtils.isNotEmpty(accessToken)) {
             cache.remove(key);
+        } else {
+            throw new BusinessException("授权码已失效");
         }
-        return accessToken;
     }
 
     public String saveRefreshToken(Token token, ApplicationDTO app) {
         String refreshToken = RandomUtil.randomString(32);
-        String cacheKey = String.format(CACHE_KEY_REFRESH, app.getId(), refreshToken);
+        String groupId = app.getGroupId();
+        String cacheKey = String.format(CACHE_KEY_REFRESH, groupId, refreshToken);
         cache.put(cacheKey, JsonUtils.toJson(token), app.getTimeRefresh(), TimeUnit.SECONDS);
         return refreshToken;
     }
 
-    public Token checkRefreshToken(String appId, String refreshToken) {
-        String cacheKey = String.format(CACHE_KEY_REFRESH, appId, refreshToken);
+    public Token checkRefreshToken(ApplicationDTO app, String refreshToken) {
+        String groupId = app.getGroupId();
+        String cacheKey = String.format(CACHE_KEY_REFRESH, groupId, refreshToken);
         String tokenJson = cache.get(cacheKey);
         if (CommonUtils.isEmpty(tokenJson)) {
             return null;
@@ -132,17 +146,41 @@ public class AuthorizeHandler {
         String refreshToken = saveRefreshToken(token, app);
         tokenVO.setRefresh_token(refreshToken);
         tokenVO.setToken_type(AuthConstants.HEADER_BEARER);
+        // todo 获取scope
         tokenVO.setScope("");
         tokenVO.setUser_id(token.getId());
+        String verifyToken = token.getClaimValue(AuthConstants.CLAIM_VERIFY, String.class);
+        String verifyKey = String.format(CACHE_KEY_VERIFY, app.getGroupId(), token.getId(), verifyToken);
+        cache.put(verifyKey, JsonUtils.toJson(tokenVO), app.getTimeAccess(), TimeUnit.SECONDS);
         return tokenVO;
     }
 
+    public AccessTokenVO currentAccessToken(Token token, ApplicationDTO app) {
+        String verifyToken = token.getClaimValue(AuthConstants.CLAIM_VERIFY, String.class);
+        String verifyKey = String.format(CACHE_KEY_VERIFY, app.getGroupId(), token.getId(), verifyToken);
+        String tokenJson = cache.get(verifyKey);
+        if (CommonUtils.isEmpty(tokenJson)) {
+            return null;
+        }
+        return JsonUtils.json(tokenJson, AccessTokenVO.class);
+    }
+
     private String getAccessTokenFromCookie() {
-        return CookieUtil.get(AuthConstants.COOKIE_ACCESS_TOKEN);
+        String groupId = session.tenantIdAsString();
+        ApplicationDTO app = currentApp();
+        if (app != null) {
+            groupId = app.getGroupId();
+        }
+        String cookieName = AuthConstants.COOKIE_ACCESS_TOKEN.concat("-").concat(groupId);
+        return CookieUtil.get(cookieName);
     }
 
     private String getAccessTokenFromHeader() {
         HttpServletRequest request = AuthContext.getRequest();
+        Object ignore = request.getAttribute(AuthConstants.SESSION_IGNORE_HEADER);
+        if (ignore != null && ignore.equals(true)) {
+            return null;
+        }
         String authorization = request.getHeader(AuthConstants.HEADER_AUTHORIZATION);
         if (CommonUtils.isEmpty(authorization)) {
             return null;
@@ -183,7 +221,11 @@ public class AuthorizeHandler {
         return value.toString();
     }
 
-    public ApplicationDTO currentApp(String appId, Func<ApplicationDTO, String> appFunc) {
+    public ApplicationDTO currentApp() {
+        return currentApp(null);
+    }
+
+    public ApplicationDTO currentApp(String appId) {
         HttpServletRequest request = AuthContext.getRequest();
         String key = AuthConstants.SESSION_APP;
         if (CommonUtils.isEmpty(appId)) {
@@ -195,7 +237,10 @@ public class AuthorizeHandler {
         if (value != null) {
             return (ApplicationDTO) value;
         }
-        ApplicationDTO app = appFunc.invoke(appId);
+        if (CommonUtils.isEmpty(appId)) {
+            return null;
+        }
+        ApplicationDTO app = appService.getAndCheck(appId);
         request.setAttribute(key, app);
         return app;
     }

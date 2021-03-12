@@ -5,7 +5,7 @@ package com.yunzhicloud.auth.core;
  * @date 2021/2/24
  */
 public interface AuthConstants {
-    String SERVICE_NAME = "yzcloud-auth";
+    String SERVICE_NAME = "business-auth";
     String VERSION = "1.0.0";
     String MAPPER_PACKAGE = "com.yunzhicloud.auth.dao";
     String REST_PACKAGE = "com.yunzhicloud.auth.web.rest";
@@ -27,6 +27,7 @@ public interface AuthConstants {
     String CLAIM_ROLE = "role";
 
     String SESSION_APP = "auth-app";
+    String SESSION_IGNORE_HEADER = "ignore-token";
 
     String COOKIE_ACCESS_TOKEN = "auth_token";
     String COOKIE_POOL_ID = "auth_pool_id";

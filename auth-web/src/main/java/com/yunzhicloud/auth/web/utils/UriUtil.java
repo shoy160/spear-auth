@@ -96,14 +96,14 @@ public final class UriUtil {
         return UriUtil.buildParams(uri, map);
     }
 
-    public static void redirectToLogin(AuthProperties config, ApplicationDTO app) {
+    public static void redirectToLogin(AuthProperties config, ApplicationDTO app, String responseType) {
         HttpServletResponse response = AuthContext.getResponse();
         //跳转
         String loginSite = config.getLoginSite();
         Map<String, Object> map = new HashMap<>();
         map.put("redirect_uri", currentUrl());
+        map.put("type", responseType);
         if (app != null) {
-            map.put("pool", app.getPoolId());
             map.put("app_id", app.getId());
         }
         String uri = UriUtil.build(loginSite, map);

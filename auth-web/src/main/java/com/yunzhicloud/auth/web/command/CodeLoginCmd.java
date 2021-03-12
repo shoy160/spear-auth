@@ -23,9 +23,6 @@ public class CodeLoginCmd {
     @ApiModelProperty("手机号码")
     private String mobile;
 
-    @ApiModelProperty("图形验证码")
-    private String code;
-
     @ApiModelProperty("验证码")
     @NotBlank(message = "验证码不能为空")
     private String verifyCode;

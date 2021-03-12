@@ -12,12 +12,14 @@ public interface PoolService {
     /**
      * 创建用户池
      *
-     * @param name
-     * @param domain
-     * @param logo
-     * @return
+     * @param name   name
+     * @param code   code
+     * @param domain domain
+     * @param logo   logo
+     * @param remark remark
+     * @return dto
      */
-    PoolDTO create(String name, String domain, String logo);
+    PoolDTO create(String name, String code, String domain, String logo, String remark);
 
     /**
      * 用户池详情
@@ -36,4 +38,18 @@ public interface PoolService {
      */
     PagedDTO<PoolDTO> paged(int page, int size);
 
+    /**
+     * 刷新秘钥
+     *
+     * @param id id
+     * @return 新的秘钥
+     */
+    String refreshSecret(String id);
+
+    /**
+     * 删除用户池
+     *
+     * @param id id
+     */
+    void remove(String id);
 }

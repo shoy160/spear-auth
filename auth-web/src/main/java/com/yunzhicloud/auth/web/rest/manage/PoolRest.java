@@ -40,31 +40,11 @@ public class PoolRest extends BaseRest {
 
     private final PoolService service;
 
-    private PoolDTO createDto() {
-        return createDto(null);
-    }
-
-    private PoolDTO createDto(String id) {
-        PoolDTO dto = new PoolDTO();
-        if (CommonUtils.isEmpty(id)) {
-            id = IdUtil.simpleUUID();
-        }
-        dto.setId(id);
-        dto.setName("Demo");
-        dto.setLogo("https://files.authing.co/user-contents/photos/222c3166-0e18-414e-8eb8-6b8f0c1b544a.png");
-        dto.setRemark("demo");
-        dto.setDomain("");
-        dto.setUserCount(0);
-        dto.setSecret(RandomUtil.randomString(32));
-        dto.setLastRegister(DateUtil.offsetMinute(new Date(), RandomUtil.randomInt(-60, -12)));
-        return dto;
-    }
-
     @PostMapping
     @ApiOperation(value = "创建用户池")
     public ResultDTO<PoolDTO> create(@Valid @RequestBody PoolCmd cmd) {
-
-        return success(createDto());
+        PoolDTO dto = service.create(cmd.getName(), cmd.getCode(), cmd.getDomain(), cmd.getLogo(), cmd.getRemark());
+        return success(dto);
     }
 
     @GetMapping
@@ -76,21 +56,26 @@ public class PoolRest extends BaseRest {
 
     @GetMapping("paged")
     @ApiOperation(value = "用户池列表")
-    public ResultDTO<PagedDTO<PoolDTO>> list(@Valid PageVO pageVO) {
+    public ResultDTO<PagedDTO<PoolDTO>> paged(@Valid PageVO pageVO) {
         PagedDTO<PoolDTO> paged = service.paged(pageVO.getPageNum(), pageVO.getPageSize());
         return success(paged);
     }
 
     @PutMapping
     @ApiOperation(value = "编辑用户池")
-    public ResultDTO edit(@ApiParam(value = "用户池ID", required = true) @RequestParam String id) {
+    public ResultDTO edit(
+            @ApiParam(value = "用户池ID", required = true) @RequestParam String id,
+            @Valid @RequestBody PoolCmd cmd
+    ) {
+
         return success();
     }
 
     @PutMapping("secret")
     @ApiOperation(value = "刷新秘钥")
-    public ResultDTO refreshSecret(@ApiParam(value = "用户池ID", required = true) @RequestParam String id) {
-        return success();
+    public ResultDTO<String> refreshSecret(@ApiParam(value = "用户池ID", required = true) @RequestParam String id) {
+        String secret = service.refreshSecret(id);
+        return success(secret);
     }
 
     @GetMapping("statistic")
@@ -108,6 +93,7 @@ public class PoolRest extends BaseRest {
     public ResultDTO delete(
             @ApiParam(value = "用户池ID", required = true) @RequestParam String id
     ) {
+        service.remove(id);
         return success();
     }
 }
