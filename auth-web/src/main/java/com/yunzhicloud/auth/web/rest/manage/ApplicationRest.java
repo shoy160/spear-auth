@@ -68,8 +68,9 @@ public class ApplicationRest extends BaseRest {
 
     @PutMapping("secret")
     @ApiOperation(value = "刷新秘钥")
-    public ResultDTO refreshSecret(@ApiParam(value = "应用ID", required = true) @RequestParam String id) {
-        return success();
+    public ResultDTO<String> refreshSecret(@ApiParam(value = "应用ID", required = true) @RequestParam String id) {
+        String secret = service.refreshSecret(id);
+        return success(secret);
     }
 
     @PutMapping("access/all")

@@ -41,6 +41,13 @@ public interface ApplicationService {
     PagedDTO<ApplicationDTO> paged(int page, int size);
 
     /**
+     * 刷新秘钥
+     *
+     * @param id id
+     */
+    String refreshSecret(String id);
+
+    /**
      * 获取并检测应用
      *
      * @param id

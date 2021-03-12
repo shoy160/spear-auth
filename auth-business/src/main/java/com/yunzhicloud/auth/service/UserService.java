@@ -1,6 +1,7 @@
 package com.yunzhicloud.auth.service;
 
 import com.yunzhicloud.auth.entity.dto.UserDTO;
+import com.yunzhicloud.core.domain.dto.PagedDTO;
 
 /**
  * 用户服务
@@ -28,6 +29,15 @@ public interface UserService {
      * @return dto
      */
     UserDTO detail(String id);
+
+    /**
+     * 用户分页
+     *
+     * @param page page
+     * @param size size
+     * @return paged
+     */
+    PagedDTO<UserDTO> paged(int page, int size);
 
     /**
      * 密码登录

@@ -4,7 +4,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yunzhicloud.auth.dao.PoolMapper;
 import com.yunzhicloud.auth.dao.UserMapper;
 import com.yunzhicloud.auth.entity.dto.UserDTO;
@@ -15,12 +15,14 @@ import com.yunzhicloud.auth.entity.po.PoolPO;
 import com.yunzhicloud.auth.entity.po.UserPO;
 import com.yunzhicloud.auth.service.UserService;
 import com.yunzhicloud.core.cache.Cache;
+import com.yunzhicloud.core.domain.dto.PagedDTO;
 import com.yunzhicloud.core.exception.BusinessException;
 import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.core.utils.CommonUtils;
 import com.yunzhicloud.core.utils.EncryptionUtil;
 import com.yunzhicloud.core.utils.EnumUtils;
 import com.yunzhicloud.core.utils.IdentityUtils;
+import com.yunzhicloud.data.utils.PagedUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +42,7 @@ public class UserServiceImpl implements UserService {
     private final Cache<String, String> cache;
     private final static String VERIFY_CODE_CACHE_KEY = "auth:code:%s:%s";
 
-    private static UserDTO convertToDto(UserPO entity) {
+    private UserDTO convert(UserPO entity) {
         UserDTO dto = CommonUtils.toBean(entity, UserDTO.class);
         dto.setGender(EnumUtils.getEnum(entity.getGender(), GenderEnum.class));
         dto.setVerifyType(EnumUtils.getEnum(entity.getVerifyType(), VerifyTypeEnum.class));
@@ -86,7 +88,7 @@ public class UserServiceImpl implements UserService {
             entity.setPassword(EncryptionUtil.md5(String.format("%s+%s", password, salt)));
         }
         mapper.insert(entity);
-        return convertToDto(entity);
+        return convert(entity);
     }
 
     @Override
@@ -95,7 +97,16 @@ public class UserServiceImpl implements UserService {
         if (entity == null) {
             return null;
         }
-        return convertToDto(entity);
+        return convert(entity);
+    }
+
+    @Override
+    public PagedDTO<UserDTO> paged(int page, int size) {
+        LambdaQueryWrapper<UserPO> wrapper = new LambdaQueryWrapper<>();
+        String poolId = session.requiredTenantId(String.class);
+        wrapper.eq(UserPO::getPoolId, poolId);
+        Page<UserPO> paged = mapper.selectPage(new Page<>(page, size), wrapper);
+        return PagedUtils.convert(paged, this::convert);
     }
 
     @Override
@@ -119,7 +130,7 @@ public class UserServiceImpl implements UserService {
         if (!pwdMd5.equalsIgnoreCase(entity.getPassword())) {
             throw new BusinessException("登录密码不正确");
         }
-        return convertToDto(entity);
+        return convert(entity);
     }
 
     @Override
@@ -158,7 +169,7 @@ public class UserServiceImpl implements UserService {
             return create(null, mobile, null, null);
         }
         cache.remove(verifyKey);
-        return convertToDto(entity);
+        return convert(entity);
     }
 
     @Override

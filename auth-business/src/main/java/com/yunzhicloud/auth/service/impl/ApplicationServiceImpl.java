@@ -2,6 +2,7 @@ package com.yunzhicloud.auth.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yunzhicloud.auth.dao.ApplicationMapper;
 import com.yunzhicloud.auth.dao.PoolMapper;
@@ -95,5 +96,22 @@ public class ApplicationServiceImpl implements ApplicationService {
         wrapper.eq(ApplicationPO::getPoolId, poolId);
         Page<ApplicationPO> paged = mapper.selectPage(new Page<>(page, size), wrapper);
         return PagedUtils.convert(paged, this::convert);
+    }
+
+    @Override
+    public String refreshSecret(String id) {
+        ApplicationPO entity = mapper.selectById(id);
+        if (entity == null) {
+            throw new BusinessException("应用不存在");
+        }
+        String secret = RandomUtil.randomString(32);
+        LambdaUpdateWrapper<ApplicationPO> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(ApplicationPO::getId, id)
+                .set(ApplicationPO::getSecret, secret);
+        int row = mapper.update(null, wrapper);
+        if (row <= 0) {
+            throw new BusinessException("刷新应用秘钥失败，请重试");
+        }
+        return secret;
     }
 }
