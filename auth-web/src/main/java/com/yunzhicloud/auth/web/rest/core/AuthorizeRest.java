@@ -145,7 +145,6 @@ public class AuthorizeRest extends BaseRest {
     public ResultDTO<AccessTokenVO> sync(
             @ApiParam(value = "应用ID", required = true) @RequestParam String app_id
     ) {
-        getRequest().setAttribute(AuthConstants.SESSION_IGNORE_HEADER, true);
         Token token = currentToken();
         if (token != null) {
             ApplicationDTO app = currentApp();

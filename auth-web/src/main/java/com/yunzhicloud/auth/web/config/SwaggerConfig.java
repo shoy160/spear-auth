@@ -71,7 +71,7 @@ public class SwaggerConfig extends BaseSwaggerConfig {
     @Bean
     @Profile({Constants.MODE_DEV, Constants.MODE_TEST})
     public Docket mediaDocket() {
-        return getDocket("后台管理", AuthConstants.VERSION, getBasePackage("manage"), "02_manager");
+        return getDocket("后台管理", AuthConstants.VERSION, getBasePackage("manage"), "02_management");
     }
 
     @Bean

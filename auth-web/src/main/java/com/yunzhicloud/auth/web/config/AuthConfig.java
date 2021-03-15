@@ -27,7 +27,7 @@ public class AuthConfig {
 
     @Bean
     public TokenSolver tokenSolver(AuthorizeHandler handler) {
-        return () -> handler.getToken(true);
+        return handler::getToken;
     }
 
     @Bean

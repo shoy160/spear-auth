@@ -17,19 +17,35 @@ export const syncToken = (appId) => {
 }
 
 export const login = (appId, account, password) => {
-  return request.post("account/login", {
-    appId: appId,
-    account: account,
-    password: password,
-  })
+  return request.post(
+    "account/login",
+    {
+      appId: appId,
+      account: account,
+      password: password,
+    },
+    {
+      headers: {
+        "yz-auth-app-id": appId,
+      },
+    }
+  )
 }
 
 export const loginByCode = (appId, mobile, vcode) => {
-  return request.post("account/login/code", {
-    appId: appId,
-    mobile: mobile,
-    vcode: vcode,
-  })
+  return request.post(
+    "account/login/code",
+    {
+      app_id: appId,
+      mobile: mobile,
+      vcode: vcode,
+    },
+    {
+      headers: {
+        "yz-auth-app-id": appId,
+      },
+    }
+  )
 }
 
 export const getAccount = (appId) => {

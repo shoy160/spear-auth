@@ -43,8 +43,9 @@ public class AuthorizeHandler {
     private final static String CACHE_KEY_CODE = "auth:%s:code:%s";
     private final static String SPLIT_AUTHORIZATION = "\\s";
 
-    public Token getToken(boolean manageSite) {
+    public Token getToken() {
         HttpServletRequest request = AuthContext.getRequest();
+        boolean manageSite = request.getServletPath().startsWith("/manage/");
         try {
             Object value = request.getAttribute(AuthConstants.HEADER_ACCESS_TOKEN);
             if (value != null) {
@@ -230,8 +231,8 @@ public class AuthorizeHandler {
 
     private String getAccessTokenFromHeader() {
         HttpServletRequest request = AuthContext.getRequest();
-        Object ignore = request.getAttribute(AuthConstants.SESSION_IGNORE_HEADER);
-        if (ignore != null && ignore.equals(true)) {
+        boolean ignore = request.getServletPath().startsWith("/oauth/");
+        if (ignore) {
             return null;
         }
         String authorization = request.getHeader(AuthConstants.HEADER_AUTHORIZATION);

@@ -2,7 +2,7 @@ import { message } from "ant-design-vue"
 import Cookie from "js-cookie"
 import Axios from "axios"
 
-// Axios.defaults.withCredentials = true
+Axios.defaults.withCredentials = true
 
 const messageKey = "msg-global"
 const baseApi = process.env.VUE_APP_API

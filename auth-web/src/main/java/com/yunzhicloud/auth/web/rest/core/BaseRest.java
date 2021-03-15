@@ -7,7 +7,6 @@ import com.yunzhicloud.auth.web.utils.UriUtil;
 import com.yunzhicloud.core.session.YzSession;
 import com.yunzhicloud.web.base.BaseController;
 import com.yunzhicloud.web.security.TokenSolver;
-import com.yunzhicloud.web.security.YzAuth;
 import com.yunzhicloud.web.vo.Token;
 
 import javax.annotation.Resource;
@@ -47,6 +46,6 @@ public abstract class BaseRest extends BaseController {
 
     @Override
     protected Token currentToken() {
-        return handler.getToken(false);
+        return handler.getToken();
     }
 }
