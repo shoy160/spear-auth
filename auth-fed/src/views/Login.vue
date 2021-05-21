@@ -15,7 +15,7 @@
         :rules="rules"
         :label-col="{ span: 5 }"
         :wrapper-col="{ span: 24 }"
-        @finish="handlerLogin"
+        @finish="handleLogin"
       >
         <div v-if="loginType === 'password'">
           <a-form-item name="account">
@@ -39,6 +39,7 @@
             <a-input
               v-model:value="model.mobile"
               size="large"
+              autocomplete="off"
               placeholder="请输入手机号"
             />
           </a-form-item>
@@ -46,8 +47,15 @@
             <a-input
               v-model:value="model.vcode"
               size="large"
+              autocomplete="off"
               placeholder="请输入短信验证码"
             >
+              <template #suffix>
+                <a-button @click="handleSend" v-if="vcodeTime <= 0"
+                  >发送验证码</a-button
+                >
+                <a-button v-else disabled>{{ vcodeTime }}秒后重试</a-button>
+              </template>
             </a-input>
           </a-form-item>
         </div>
@@ -68,8 +76,10 @@
 </template>
 <script>
 import { getUrl } from "@/utils/request"
+import { message } from "ant-design-vue"
 import { getConfig, syncToken, login, loginByCode } from "@/service/index"
 import Cookie from "js-cookie"
+import Logan from "logan-web"
 // import User from "@ant-design/icons/User"
 export default {
   name: "Login",
@@ -83,6 +93,7 @@ export default {
       type: "code",
       redirect: "",
       config: {},
+      vcodeTime: 0,
       model: {
         account: "",
         password: "",
@@ -97,7 +108,10 @@ export default {
           { min: 6, message: "登录密码至少6位", trigger: "blur" },
         ],
         mobile: [{ required: true, message: "手机号码不能为空" }],
-        vcode: [{ required: true, message: "验证码不能为空" }],
+        vcode: [
+          { required: true, message: "验证码不能为空" },
+          { min: 6, max: 6, message: "请输入6位验证码" },
+        ],
       },
     }
   },
@@ -135,32 +149,59 @@ export default {
     verifyToken() {
       syncToken(this.appId).then((json) => {
         if (json && json.data.access_token) {
-          this.handlerLogined(json)
+          this.handleLogined(json)
         }
       })
     },
     changeType(type) {
       this.loginType = type
     },
-    handlerLogined(json) {
+    handleSend() {
+      const { mobile } = this.model
+      if (!mobile || !/^1[0-9]{10}$/.test(mobile)) {
+        message.warn("请输入正确的手机号")
+        return
+      }
+      this.vcodeTime = 60
+      var timer = setInterval(() => {
+        this.vcodeTime -= 1
+        if (this.vcodeTime <= 0) {
+          clearInterval(timer)
+        }
+      }, 1000)
+    },
+    handleLogined(json) {
       console.log(json)
       Cookie.set("auth_token", json.data.access_token)
       Cookie.set("refresh_token", json.data.refresh_token, {
         expires: (json.data.expires_in * 2) / (60 * 60 * 24),
       })
-      if (this.redirect) {
-        location.href = this.redirect
-      }
+      Logan.report({
+        reportUrl:
+          "https://center-logan.app-chengdu1.yunzhicloud.com/api/logan/web/upload.json",
+        deviceId: "auth002",
+        webSource: "Chrome",
+        environment: navigator.userAgent,
+        fromDayString: "2021-03-18",
+        toDayString: "2021-03-20",
+      }).then((d) => {
+        console.log(d)
+      })
+      // if (this.redirect) {
+      //   location.href = this.redirect
+      // }
     },
-    handlerLogin() {
+    handleLogin() {
       //
       if (this.loginType === "password") {
+        Logan.log(`account:${this.model.account} loging`, 1)
         login(this.appId, this.model.account, this.model.password).then(
-          this.handlerLogined
+          this.handleLogined
         )
       } else if (this.loginType === "code") {
+        Logan.log(`mobile:${this.model.mobile} loging`, 2)
         loginByCode(this.appId, this.model.mobile, this.model.vcode).then(
-          this.handlerLogined
+          this.handleLogined
         )
       }
     },
