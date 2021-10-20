@@ -1,6 +1,0 @@
-nacos:
-  config:
-    server-addr: https://center-nacos.app-chengdu1.yunzhicloud.com
-    namespace: ca75c1d1-9a68-410b-9721-40da085036af
-    bootstrap:
-      enable: true

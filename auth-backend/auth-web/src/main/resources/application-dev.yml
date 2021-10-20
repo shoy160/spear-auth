@@ -1,0 +1,31 @@
+server:
+  port: 9862
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.2.211:32498/db_auth?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2B8
+    username: root
+    password: U8mNZ8sziu0cK0s6
+    hikari:
+      pool-name: raveland-pool
+      connection-timeout: 10000
+      validation-timeout: 3000
+      idle-timeout: 30000
+      max-lifetime: 60000
+      maximum-pool-size: 10
+      minimum-idle: 5
+      read-only: false
+  redis:
+    host: 192.168.2.211
+    port: 30438
+    password: hlkyCllWBo7d8w7j
+    database: 0
+raveland:
+  auth:
+    login-site: http://192.168.2.252:8080/login
+    default-pool: 148c083380021192
+    default-app: 148c089410c21177
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -2,7 +2,7 @@
   <div class="login">
     <main class="container">
       <div class="auth-header">
-        <span><img :src="config.logo" alt=""/></span>
+        <img :src="config.logo" alt="" />
         <div class="title">{{ config.name }}</div>
       </div>
       <a-tabs :default-active-key="loginType" @change="changeType">
@@ -75,136 +75,144 @@
   </div>
 </template>
 <script>
-import { getUrl } from "@/utils/request"
-import { message } from "ant-design-vue"
-import { getConfig, syncToken, login, loginByCode } from "@/service/index"
-import Cookie from "js-cookie"
-import Logan from "logan-web"
-// import User from "@ant-design/icons/User"
+import { storeToken, storePoolId, storeAppId } from '@/utils/auth'
+import { getUrl } from '@/utils/request'
+// import { message } from 'ant-design-vue'
+import {
+  getConfig,
+  syncToken,
+  login,
+  sendCode,
+  loginByCode,
+} from '@/service/auth'
+import { ref, onMounted, inject } from 'vue'
+import { useRoute } from 'vue-router'
 export default {
-  name: "Login",
-  components: {
-    // User,
-  },
-  data() {
-    return {
-      loginType: "password",
-      appId: "",
-      type: "code",
-      redirect: "",
-      config: {},
-      vcodeTime: 0,
-      model: {
-        account: "",
-        password: "",
-        mobile: "",
-        vcode: "",
-        code: "",
-      },
-      rules: {
-        account: [{ required: true, message: "登录账号不能为空" }],
-        password: [
-          { required: true, message: "登录密码不能为空" },
-          { min: 6, message: "登录密码至少6位", trigger: "blur" },
-        ],
-        mobile: [{ required: true, message: "手机号码不能为空" }],
-        vcode: [
-          { required: true, message: "验证码不能为空" },
-          { min: 6, max: 6, message: "请输入6位验证码" },
-        ],
-      },
-    }
-  },
-  mounted() {
-    this.appId = this.$route.query.app_id
-    this.redirect = this.$route.query.redirect_uri
-    this.type = this.$route.query.type || "code"
-    this.getConfig()
-  },
-  methods: {
-    changeTitle() {
+  name: 'Login',
+  setup() {
+    const route = useRoute()
+    const $message = inject('$message')
+
+    let appId = ''
+    let type = 'code'
+    let redirect = ''
+    let config = ref({})
+    const vcodeTime = ref(0)
+    const loginType = ref('password')
+    const model = ref({
+      account: '',
+      password: '',
+      mobile: '',
+      vcode: '',
+      code: '',
+    })
+
+    const rules = ref({
+      account: [{ required: true, message: '登录账号不能为空' }],
+      password: [
+        { required: true, message: '登录密码不能为空' },
+        { min: 6, message: '登录密码至少6位', trigger: 'blur' },
+      ],
+      mobile: [{ required: true, message: '手机号码不能为空' }],
+      vcode: [
+        { required: true, message: '验证码不能为空' },
+        { min: 6, max: 6, message: '请输入6位验证码' },
+      ],
+    })
+
+    const changeTitle = () => {
       var link =
         document.querySelector("link[rel*='icon']") ||
-        document.createElement("link")
-      link.type = "image/x-icon"
-      link.rel = "shortcut icon"
-      link.href = this.config.logo
-      document.getElementsByTagName("head")[0].appendChild(link)
-      document.title = `${this.config.name} 登录 - 云智云统一认证中心`
-    },
-    getConfig() {
-      getConfig(this.appId).then((json) => {
-        this.config = json.data
-        this.appId = this.config.id
-        Cookie.set("auth_pool_id", this.config.poolId)
-        if (!this.redirect) {
-          this.redirect = getUrl(
-            `oauth/authorize?client_id=${this.appId}&response_type=${this.type}`
+        document.createElement('link')
+      link.type = 'image/x-icon'
+      link.rel = 'shortcut icon'
+      link.href = config.value.logo
+      document.getElementsByTagName('head')[0].appendChild(link)
+      document.title = `${config.value.name} 登录 - Raveland统一认证中心`
+    }
+
+    const handleLogined = (json) => {
+      console.log(json)
+      storeToken(json.data)
+      if (redirect) {
+        location.href = redirect
+      }
+    }
+
+    const verifyToken = () => {
+      syncToken(appId).then((json) => {
+        if (json && json.data.access_token) {
+          handleLogined(json)
+        }
+      })
+    }
+
+    const initConfig = () => {
+      getConfig(appId).then((json) => {
+        const { id, poolId } = json.data
+        config.value = json.data
+        appId = id
+        storeAppId(appId)
+        storePoolId(poolId)
+        if (!redirect) {
+          redirect = getUrl(
+            `oauth/authorize?client_id=${appId}&response_type=${type}`
           )
         }
-        this.verifyToken()
-        this.changeTitle()
+        verifyToken()
+        changeTitle()
       })
-    },
-    verifyToken() {
-      syncToken(this.appId).then((json) => {
-        if (json && json.data.access_token) {
-          this.handleLogined(json)
-        }
-      })
-    },
-    changeType(type) {
-      this.loginType = type
-    },
-    handleSend() {
-      const { mobile } = this.model
+    }
+
+    const changeType = (type) => {
+      loginType.value = type
+    }
+
+    const handleSend = () => {
+      const { mobile } = model.value
       if (!mobile || !/^1[0-9]{10}$/.test(mobile)) {
-        message.warn("请输入正确的手机号")
+        $message.warn('请输入正确的手机号')
         return
       }
-      this.vcodeTime = 60
-      var timer = setInterval(() => {
-        this.vcodeTime -= 1
-        if (this.vcodeTime <= 0) {
-          clearInterval(timer)
-        }
-      }, 1000)
-    },
-    handleLogined(json) {
-      console.log(json)
-      Cookie.set("auth_token", json.data.access_token)
-      Cookie.set("refresh_token", json.data.refresh_token, {
-        expires: (json.data.expires_in * 2) / (60 * 60 * 24),
+      sendCode(mobile).then((json) => {
+        model.value.vcode = json.data
+        $message.success('发送成功')
+        vcodeTime.value = 60
+        var timer = setInterval(() => {
+          vcodeTime.value -= 1
+          if (vcodeTime.value <= 0) {
+            clearInterval(timer)
+          }
+        }, 1000)
       })
-      Logan.report({
-        reportUrl:
-          "https://center-logan.app-chengdu1.yunzhicloud.com/api/logan/web/upload.json",
-        deviceId: "auth002",
-        webSource: "Chrome",
-        environment: navigator.userAgent,
-        fromDayString: "2021-03-18",
-        toDayString: "2021-03-20",
-      }).then((d) => {
-        console.log(d)
-      })
-      // if (this.redirect) {
-      //   location.href = this.redirect
-      // }
-    },
-    handleLogin() {
-      //
-      if (this.loginType === "password") {
-        Logan.log(`account:${this.model.account} loging`, 1)
-        login(this.appId, this.model.account, this.model.password).then(
-          this.handleLogined
-        )
-      } else if (this.loginType === "code") {
-        Logan.log(`mobile:${this.model.mobile} loging`, 2)
-        loginByCode(this.appId, this.model.mobile, this.model.vcode).then(
-          this.handleLogined
-        )
+    }
+
+    const handleLogin = () => {
+      if (loginType.value === 'password') {
+        const { account, password } = model.value
+        login(appId, account, password).then(handleLogined)
+      } else if (loginType.value === 'code') {
+        const { mobile, vcode } = model.value
+        loginByCode(appId, mobile, vcode).then(handleLogined)
       }
-    },
+    }
+
+    onMounted(() => {
+      appId = route.query.app_id
+      redirect = route.query.redirect_uri
+      type = route.query.type || 'code'
+      initConfig()
+    })
+    return {
+      config,
+      loginType,
+      vcodeTime,
+      model,
+      rules,
+      changeType,
+      handleSend,
+      handleLogin,
+    }
   },
 }
 </script>
@@ -242,12 +250,13 @@ export default {
 }
 .container .auth-header > img {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 80px;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: cover;
 }
 .container .auth-header .title {
-  font-family: "PingFangSC-Medium";
+  font-family: 'PingFangSC-Medium';
   color: #abb9d7;
   margin-top: 0.5rem;
   font-size: 24px;

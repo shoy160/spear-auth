@@ -1,14 +1,21 @@
-import { createApp } from "vue"
-import { Button, Form, Input, Tabs } from "ant-design-vue"
+import { createApp } from 'vue'
+import { Button, Form, Input, Tabs, message } from 'ant-design-vue'
 
-import App from "./App.vue"
+import App from './App.vue'
 
-import router from "./router"
+import router from './router'
 
-createApp(App)
+const app = createApp(App)
   .use(router)
   .use(Button)
   .use(Form)
   .use(Input)
   .use(Tabs)
-  .mount("#app")
+
+//全局过滤器
+app.config.globalProperties.$message = message
+app.config.globalProperties.$filters = {}
+app.provide('$message', message)
+
+//挂载APP
+app.mount('#app')

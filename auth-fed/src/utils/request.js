@@ -1,10 +1,10 @@
-import { message } from "ant-design-vue"
-import Cookie from "js-cookie"
-import Axios from "axios"
+import { message } from 'ant-design-vue'
+import { getToken, getPoolId } from '@/utils/auth'
+import Axios from 'axios'
 
 Axios.defaults.withCredentials = true
 
-const messageKey = "msg-global"
+const messageKey = 'msg-global'
 const baseApi = process.env.VUE_APP_API
 const request = Axios.create({
   baseURL: baseApi,
@@ -15,13 +15,13 @@ request.url = (api) => {
 }
 request.interceptors.request.use(
   (config) => {
-    const poolId = Cookie.get("auth_pool_id")
-    const token = Cookie.get("auth_token")
+    const poolId = getPoolId()
+    const token = getToken()
     if (poolId) {
-      config.headers["yz-auth-pool-id"] = poolId
+      config.headers['auth-pool-id'] = poolId
     }
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`
+      config.headers['Authorization'] = `Bearer ${token}`
     }
     return config
   },
@@ -56,7 +56,7 @@ request.interceptors.response.use(
   (error) => {
     console.error(error)
     message.error({
-      content: "网络异常，请稍后重试",
+      content: '网络异常，请稍后重试',
       duration: 2,
       key: messageKey,
     })

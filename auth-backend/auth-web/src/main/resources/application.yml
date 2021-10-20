@@ -1,0 +1,3 @@
+raveland:
+  enable-cors: true
+  cors-headers: "*"
